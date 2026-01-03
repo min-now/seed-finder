@@ -2,9 +2,20 @@
 #    PROJECT CONFIG    #
 ########################
 TARGET 	    = seed_finder
-SRC_DIR 	= ./src
-INC_DIR     = ./include
+INC 		= ./include
+SRC			= ./src
+DIRS 		= . locale rng engine
+
+SRC_DIR     = $(foreach D, $(DIRS), $(wildcard $(SRC)/$(D)))
+INC_DIR     = $(foreach D, $(DIRS), $(wildcard $(INC)/$(D)))
+
+$(info $(SRC_DIR))
+$(info $(INC_DIR))
+
 BUILD_DIR   = ./build
+
+#INC_DIR     = ./include ./include
+#SRC_DIR 	= ./src ./src/locale ./src/engine ./src/rng
 
 ###############
 #    FILES    #
@@ -18,11 +29,11 @@ DEP_FILES   = $(patsubst %.c, %.d, $(C_FILES))
 #    COMPILER SETTINGS    # 
 ###########################
 CC          = gcc
-STD         = -std=c99
+STD         = -std=c23
 OPT         = -O3
 W_FLAGS     = -Wall -Wextra -Wundef -Wshadow
 DEP_FLAGS   = -MP -MD
-C_FLAGS     = $(STD) $(OPT) $(W_FLAGS) -I$(INC_DIR) $(DEP_FLAGS)
+C_FLAGS     = $(STD) $(OPT) $(W_FLAGS) -I$(INC) $(DEP_FLAGS)
 
 #######################
 #    BUILD TARGETS    #
