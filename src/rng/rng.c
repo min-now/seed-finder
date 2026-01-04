@@ -62,7 +62,6 @@ static void init_adv_helper(struct rng_t *rng, u8 rounds)
 				}
 
 				if (rng->rand_next(rng, 101) <= RNG_ADVANCEMENT_TABLE[i][j]) {
-
 					break;
 				}
 			}
