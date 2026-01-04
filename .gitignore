@@ -3,6 +3,8 @@ build/
 *.d
 *.o
 *.*~
+*.swp
+*.un
 
 *.a
 *.lib
