@@ -41,6 +41,9 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(C_FLAGS) -c -o $@ $<
 
+run: $(TARGET_PATH)
+	$(TARGET_PATH)
+
 format:
 	clang-format.exe -i $(C_FILES) $(H_FILES)
 
