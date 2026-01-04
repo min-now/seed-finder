@@ -39,6 +39,6 @@ u64 rng_init_adv_bw1(struct rng_t *rng);
 
 u64 rng_init_adv_bw2(struct rng_t *rng);
 
-static void rng_reset(struct rng_t *rng);
+void rng_reset(struct rng_t *rng);
 
 #endif /* SEED_FINDER_RNG_RNG_H */

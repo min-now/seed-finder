@@ -2,56 +2,50 @@
 #    PROJECT CONFIG    #
 ########################
 TARGET 	    = seed_finder
-INC 		= ./include
-SRC			= ./src
-DIRS 		= . locale rng engine
-
-SRC_DIR     = $(foreach D, $(DIRS), $(wildcard $(SRC)/$(D)))
-INC_DIR     = $(foreach D, $(DIRS), $(wildcard $(INC)/$(D)))
-
-$(info $(SRC_DIR))
-$(info $(INC_DIR))
-
 BUILD_DIR   = ./build
+INC_DIR 	= ./include
+SRC_DIR		= ./src
 
-#INC_DIR     = ./include ./include
-#SRC_DIR 	= ./src ./src/locale ./src/engine ./src/rng
+TARGET_PATH = $(BUILD_DIR)/$(TARGET)
 
-###############
-#    FILES    #
-###############
-C_FILES     = $(foreach D, $(SRC_DIR), $(wildcard $(D)/*.c))
-H_FILES     = $(foreach D, $(INC_DIR), $(wildcard $(D)/*.h))
-OBJ_FILES   = $(patsubst %.c, %.o, $(C_FILES))
-DEP_FILES   = $(patsubst %.c, %.d, $(C_FILES))
+#################
+#    SOURCES    #
+#################
+C_FILES     = $(shell find $(SRC_DIR) -name '*.c')
+H_FILES     = $(shell find $(SRC_DIR) $(INC_DIR) -name '*.h')
+
+OBJ_FILES   = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(C_FILES))
+DEP_FILES   = $(OBJ_FILES:.o=.d)
 
 ###########################
 #    COMPILER SETTINGS    # 
 ###########################
-CC          = gcc
-STD         = -std=c23
+CC          = gcc-13
+STD         = -std=c2x
 OPT         = -O3
 W_FLAGS     = -Wall -Wextra -Wundef -Wshadow
 DEP_FLAGS   = -MP -MD
-C_FLAGS     = $(STD) $(OPT) $(W_FLAGS) -I$(INC) $(DEP_FLAGS)
+C_FLAGS     = $(STD) $(OPT) $(W_FLAGS) -I$(INC_DIR) $(DEP_FLAGS)
 
 #######################
 #    BUILD TARGETS    #
 #######################
 
-all: $(TARGET)
+all: $(TARGET_PATH)
 
-$(TARGET): $(OBJ_FILES)
+$(TARGET_PATH): $(OBJ_FILES)
+	@mkdir -p $(dir $@)
 	$(CC) -o $@ $^
 
-%.o: %.c
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
 	$(CC) $(C_FLAGS) -c -o $@ $<
 
 format:
-	clang-format -i $(C_FILES) $(H_FILES)
+	clang-format.exe -i $(C_FILES) $(H_FILES)
 
 clean:
-	rm -rf $(BINARY) $(OBJ_FILES) $(DEP_FILES)
+	rm -rf $(BUILD_DIR)
 
 -include $(DEP_FILES)
 

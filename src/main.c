@@ -8,7 +8,7 @@ int main(void)
 
 	rng.adv(&rng, 4);
 
-	printf("%llx", rng.rng);
+	printf("%lX", rng.rng);
 
 	return 0;
 }

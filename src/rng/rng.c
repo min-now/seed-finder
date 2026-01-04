@@ -53,12 +53,6 @@ u64 rng_rand_next(struct rng_t *rng, const u32 num)
 	return ((rng->next(rng) >> 32) * num) >> 32;
 }
 
-void rng_reset(struct rng_t *rng)
-{
-	rng->frame = 0;
-	rng->rng = rng->seed;
-}
-
 static void init_adv_helper(struct rng_t *rng, u8 rounds)
 {
 	for (u8 round = 0; round < rounds; round++)
@@ -109,4 +103,10 @@ u64 rng_init_adv_bw2(struct rng_t *rng)
 	}
 
 	return rng->rng;
+}
+
+void rng_reset(struct rng_t *rng)
+{
+	rng->rng = rng->seed;
+	rng->frame = 0;
 }
