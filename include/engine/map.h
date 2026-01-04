@@ -1,8 +1,8 @@
 #ifndef SEED_FINDER_ENGINE_MAP_H
 #define SEED_FINDER_ENGINE_MAP_H
 
-#include "utils/types.h"
 #include "engine/trainer.h"
+#include "utils/types.h"
 
 #define MAX_AREA_NAME_LENGTH 20
 #define MAX_AREA_LOADLINES   4
