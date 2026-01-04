@@ -4,14 +4,15 @@
 #include "locale/language.h"
 #include "utils/types.h"
 
-static const u8 RNG_ADVANCEMENT_TABLE[5][4] = {{50, 100, 100, 100},
-											   {50, 50, 100, 100},
-											   {30, 50, 100, 100},
-											   {25, 30, 50, 100},
-											   {20, 25, 33, 50}};
+static const u8 RNG_ADVANCEMENT_TABLE[5][4] = {
+	{50, 100, 100, 100},
+	{50, 50,  100, 100},
+	{30, 50,  100, 100},
+	{25, 30,  50,  100},
+	{20, 25,  33,  50 }
+};
 
-struct rng_t
-{
+struct rng_t {
 	u64 seed;
 	u64 rng;
 	u32 frame;

@@ -1,6 +1,6 @@
-#include <stdio.h>
-
 #include "rng/rng.h"
+
+#include <stdio.h>
 
 int main(void)
 {

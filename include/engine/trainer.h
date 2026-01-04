@@ -1,49 +1,45 @@
 #ifndef SEED_FINDER_ENGINE_TRAINER_H
 #define SEED_FINDER_ENGINE_TRAINER_H
 
-#include <stdlib.h>
-
 #include "engine/coords.h"
 #include "rng/rng.h"
 #include "utils/macros.h"
 #include "utils/types.h"
 
+#include <stdlib.h>
+
 #define MAX_TRAINER_CLASS_LEN 20
-#define MAX_TRAINER_NAME_LEN 20
-#define MAX_DIRS 4
+#define MAX_TRAINER_NAME_LEN  20
+#define MAX_DIRS              4
 
 constexpr static u8 TRAINER_TIMERS[4] = {16, 32, 48, 64};
 
-enum trainer_dir_e
-{
+enum trainer_dir_e {
 	DIR_NONE = 0,
 
-	DIR_UP = 1 << 1,
-	DIR_DOWN = 1 << 2,
-	DIR_LEFT = 1 << 3,
+	DIR_UP    = 1 << 1,
+	DIR_DOWN  = 1 << 2,
+	DIR_LEFT  = 1 << 3,
 	DIR_RIGHT = 1 << 4,
 
 	DIR_ALL = DIR_UP | DIR_DOWN | DIR_LEFT | DIR_RIGHT
 };
 
-enum trainer_status_e
-{
+enum trainer_status_e {
 	TRAINER_STATUS_UNLOADED,
 	TRAINER_STATUS_LOADED,
 	TRAINER_STATUS_ACTIVE
 };
 
-enum trainer_type_e
-{
-	TRAINER_TYPE_SPINNER = 0,
+enum trainer_type_e {
+	TRAINER_TYPE_SPINNER      = 0,
 	TRAINER_TYPE_SPINNER_DEAF = 2,
-	TRAINER_TYPE_WALKER = 8,
+	TRAINER_TYPE_WALKER       = 8,
 	//	TRAINER_TYPE_WALKER_DEAF = 8,
 	TRAINER_TYPE_STATIC = 10,
 };
 
-struct trainer_t
-{
+struct trainer_t {
 	u8 timer;
 	u8 delay;
 	const s8 extra_adv;

@@ -3,11 +3,9 @@
 
 #include "utils/types.h"
 
-struct position_t
-{
+struct position_t {
 	union {
-		struct
-		{
+		struct {
 			u8 x, y, z;
 		};
 		u8 raw[3];

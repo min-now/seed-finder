@@ -1,8 +1,7 @@
 #ifndef SEED_FINDER_LOCALE_LANGUAGE_H
 #define SEED_FINDER_LOCALE_LANGUAGE_H
 
-enum game_version_e
-{
+enum game_version_e {
 	GAME_BLACK,
 	GAME_WHITE,
 	GAME_WHITE_2,
@@ -10,8 +9,7 @@ enum game_version_e
 	GAME_NOT_SET
 };
 
-enum language_e
-{
+enum language_e {
 	LANG_JPN,
 	LANG_ENG,
 	LANG_FRA,

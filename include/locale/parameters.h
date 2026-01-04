@@ -4,8 +4,7 @@
 #include "locale/language.h"
 #include "utils/types.h"
 
-struct parameters_t
-{
+struct parameters_t {
 	u64 mac_address;
 
 	u32 min_timer0, max_timer0;

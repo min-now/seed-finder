@@ -1,6 +1,54 @@
 ﻿---
-BasedOnStyle: Microsoft
-ColumnLimit: '80'
-UseTab: Always
+AlignAfterOpenBracket: Align
+AlignArrayOfStructures: Left
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCompound: false
+  AlignFunctionPointers: true
+  PadOperators: false
+AlignConsecutiveBitFields:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: true
+  AlignCompound: false
+  AlignFunctionPointers: true
+  PadOperators: false
+AlignConsecutiveDeclarations:
+  Enabled: false
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossComments: true
+  AlignCompound: true
+  AlignFunctionPointers: true
+  PadOperators: false
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true
+  AlignCaseColons: false
+AlignEscapedNewlines: LeftWithLastLine
+AlignOperands: AlignAfterOperator
+AlignTrailingComments:
+  Kind: Always
+AllowShortBlocksOnASingleLine: Empty
+AllowShortEnumsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: true
+AlwaysBreakBeforeMultilineStrings: true
+BinPackArguments: true
+BinPackParameters: true
+BitFieldColonSpacing: Both
+IndentWidth: 4
+BraceWrapping:
+  AfterFunction: true
+BreakBeforeBraces: Linux
+UseTab: ForContinuationAndIndentation
 TabWidth: 4
-...
+SortIncludes: CaseInsensitive
+IncludeBlocks: Regroup
+InsertBraces: true
+InsertNewlineAtEOF: true
+Language: Cpp
