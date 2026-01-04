@@ -24,5 +24,6 @@ struct parameters_t {
 };
 
 void parameters_set_default(struct parameters_t *params, enum game_version_e);
+void parameters_validate(struct parameters_t *params);
 
 #endif /* SEED_FINDER_LOCALE_PARAMETERS */
