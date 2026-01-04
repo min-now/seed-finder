@@ -28,15 +28,6 @@ W_FLAGS     = -Wall -Wextra -Wundef -Wshadow
 DEP_FLAGS   = -MP -MD
 C_FLAGS     = $(STD) $(OPT) $(W_FLAGS) $(foreach D, $(INC_DIR), -I$D) $(DEP_FLAGS)
 
-###################
-#    LIBRARIES    #
-###################
-LIB_SHA1		= libsha1.a
-LIB_SHA1_DIR 	= $(LIB_DIR)/libsha1
-
-LIB_SHA1_C_FILES = $(wildcard $(LIB_SHA1_DIR)/*.c)
-LIB_SHA1_OBJ_FILES = $(LIB_SHA1_C_FILES:.c=.o)
-
 #######################
 #    BUILD TARGETS    #
 #######################
