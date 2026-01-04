@@ -1,7 +1,6 @@
 #ifndef SEED_FINDER_ENGINE_TRAINER_H
 #define SEED_FINDER_ENGINE_TRAINER_H
 
-#include "engine/coords.h"
 #include "rng/rng.h"
 #include "utils/macros.h"
 #include "utils/types.h"

@@ -1,6 +1,6 @@
 #include "rng/rng.h"
 
-#include "locale/parameters.h"
+#include "config/parameters.h"
 #include "utils/types.h"
 
 struct rng_t rng_init(const u64 seed, const enum game_version_e version)

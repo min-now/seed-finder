@@ -1,4 +1,9 @@
-#include "locale/parameters.h"
+#include "search.h"
+
+#include "config/parameters.h"
 #include "utils/types.h"
 
-void generate_seeds(struct parameters_t parameters) {}
+
+void generate(struct parameters_t *params, callback_t *cb);
+
+

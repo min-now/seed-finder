@@ -3,8 +3,9 @@
 ########################
 TARGET 	    = seed_finder
 BUILD_DIR   = ./build
-INC_DIR 	= ./include
+INC_DIR 	= ./include .
 SRC_DIR		= ./src
+LIB_DIR		= ./lib
 
 TARGET_PATH = $(BUILD_DIR)/$(TARGET)
 
@@ -20,12 +21,21 @@ DEP_FILES   = $(OBJ_FILES:.o=.d)
 ###########################
 #    COMPILER SETTINGS    # 
 ###########################
-CC          = gcc-13
-STD         = -std=c2x
+CC          = clang-19
+STD         = -std=c23
 OPT         = -O3
 W_FLAGS     = -Wall -Wextra -Wundef -Wshadow
 DEP_FLAGS   = -MP -MD
-C_FLAGS     = $(STD) $(OPT) $(W_FLAGS) -I$(INC_DIR) $(DEP_FLAGS)
+C_FLAGS     = $(STD) $(OPT) $(W_FLAGS) $(foreach D, $(INC_DIR), -I$D) $(DEP_FLAGS)
+
+###################
+#    LIBRARIES    #
+###################
+LIB_SHA1		= libsha1.a
+LIB_SHA1_DIR 	= $(LIB_DIR)/libsha1
+
+LIB_SHA1_C_FILES = $(wildcard $(LIB_SHA1_DIR)/*.c)
+LIB_SHA1_OBJ_FILES = $(LIB_SHA1_C_FILES:.c=.o)
 
 #######################
 #    BUILD TARGETS    #
@@ -52,4 +62,4 @@ clean:
 
 -include $(DEP_FILES)
 
-.PHONY: all clean format
+.PHONY: all clean format run

@@ -1,4 +1,4 @@
-#include "locale/parameters.h"
+#include "config/parameters.h"
 
 #include "locale/language.h"
 #include "utils/macros.h"
@@ -21,6 +21,13 @@
 void parameters_validate(struct parameters_t *params)
 {
 	printf("Validating parameters...");
+
+	CHECK_VALID(params->max_keypresses, 0, 8);
+	CHECK_VALID_RANGE(params->min_timer0, params->max_timer0);
+	CHECK_VALID_RANGE(params->min_vcount, params->max_vcount);
+	CHECK_VALID_RANGE(params->min_vframe, params->max_vframe);
+	CHECK_VALID_RANGE(params->min_gxstat, params->max_gxstat);
+
 	// Y/M/D
 	{
 		CHECK_VALID(params->min_year, 2000, 2099);
@@ -80,7 +87,9 @@ void parameters_set_default(struct parameters_t *params,
 
 	params->min_gxstat = params->max_gxstat = 0x6;
 
-	switch (game_version) {
+	params->max_keypresses = 8;
+
+	switch (params->game_version) {
 	case GAME_BLACK:
 	case GAME_WHITE:
 		params->min_timer0 = 0xC79;
@@ -89,7 +98,7 @@ void parameters_set_default(struct parameters_t *params,
 	case GAME_WHITE_2:
 	case GAME_BLACK_2:
 		params->min_timer0 = 0x10F2;
-		params->min_timer0 = 0x10F6;
+		params->max_timer0 = 0x10F6;
 		params->min_vcount = params->max_vcount = 0x82;
 		params->min_vframe = params->max_vframe = 0x8;
 		break;
