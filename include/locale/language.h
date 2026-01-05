@@ -1,17 +1,21 @@
 #ifndef SEED_FINDER_LOCALE_LANGUAGE_H
 #define SEED_FINDER_LOCALE_LANGUAGE_H
 
+#define GAME_VERSION_AMT 4
+
 enum game_version_e {
-	GAME_BLACK,
+	GAME_BLACK = 0,
 	GAME_WHITE,
 	GAME_WHITE_2,
 	GAME_BLACK_2,
 	GAME_NOT_SET
 };
 
+#define LANG_AMT 7
+
 enum language_e {
-	LANG_JPN,
 	LANG_ENG,
+	LANG_JPN,
 	LANG_FRA,
 	LANG_ITA,
 	LANG_GER,
