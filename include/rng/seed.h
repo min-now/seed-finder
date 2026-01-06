@@ -20,4 +20,6 @@ struct seed_ctx_t {
 	u32 timer0, vcount, vframe, gxstat;
 };
 
+void seed_ctx_init(struct seed_ctx_t *ctx, struct parameters_t *params);
+
 #endif /* SEED_FINDER_RNG_SEED_H */
