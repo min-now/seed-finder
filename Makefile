@@ -21,7 +21,7 @@ DEP_FILES   = $(OBJ_FILES:.o=.d)
 ###########################
 #    COMPILER SETTINGS    # 
 ###########################
-CC          = clang-19
+CC          = clang-22
 STD         = -std=c23
 OPT         = -O3
 W_FLAGS     = -Wall -Wextra -Wundef -Wshadow
@@ -46,7 +46,7 @@ run: $(TARGET_PATH)
 	$(TARGET_PATH)
 
 format:
-	clang-format.exe -i $(C_FILES) $(H_FILES)
+	clang-format-22 -i $(C_FILES) $(H_FILES)
 
 clean:
 	rm -rf $(BUILD_DIR)
