@@ -1,54 +1,112 @@
 ﻿---
-AlignAfterOpenBracket: Align
-AlignArrayOfStructures: Left
+Language: C
+
+AlignAfterOpenBracket: BlockIndent
+
+AlignArrayOfStructures: Right
+
 AlignConsecutiveAssignments:
   Enabled: true
   AcrossEmptyLines: false
   AcrossComments: false
   AlignCompound: false
   AlignFunctionPointers: true
-  PadOperators: false
-AlignConsecutiveBitFields:
-  Enabled: true
-  AcrossEmptyLines: false
-  AcrossComments: true
-  AlignCompound: false
-  AlignFunctionPointers: true
-  PadOperators: false
+  PadOperators: true
+
+AlignConsecutiveBitFields: AcrossEmptyLinesAndComments
+
 AlignConsecutiveDeclarations:
-  Enabled: false
-AlignConsecutiveMacros:
   Enabled: true
-  AcrossComments: true
-  AlignCompound: true
+  AlignFunctionDeclarations: true
   AlignFunctionPointers: true
-  PadOperators: false
+
+
+AlignConsecutiveMacros: Consecutive
+
 AlignConsecutiveShortCaseStatements:
   Enabled: true
   AcrossEmptyLines: true
   AcrossComments: true
   AlignCaseColons: false
+
 AlignEscapedNewlines: LeftWithLastLine
+
 AlignOperands: AlignAfterOperator
+
 AlignTrailingComments:
   Kind: Always
-AllowShortBlocksOnASingleLine: Empty
+  OverEmptyLines: 1
+
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: true
+
 AllowShortEnumsOnASingleLine: true
+
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: WithoutElse
+
 AllowShortLoopsOnASingleLine: true
+
 AlwaysBreakBeforeMultilineStrings: true
+
 BinPackArguments: true
 BinPackParameters: true
+
+BinPackLongBracedList: true
+
+Cpp11BracedListStyle: false
+SpaceBeforeCpp11BracedList: true
+
+
 BitFieldColonSpacing: Both
 IndentWidth: 4
 BraceWrapping:
   AfterFunction: true
+  BeforeWhile: false
+
+BreakBeforeBinaryOperators: NonAssignment
+ColumnLimit: 120
+
 BreakBeforeBraces: Linux
 UseTab: ForContinuationAndIndentation
 TabWidth: 4
-SortIncludes: CaseInsensitive
+
+EnumTrailingComma: Remove
+
+PointerAlignment: Right
+
+# line wrapping
+
+SortIncludes: true
 IncludeBlocks: Regroup
+IncludeCategories:
+    - Regex: '^<.*'
+      Priority: 1
+    - Regex: '^".*'
+      Priority: 2
+
 InsertBraces: true
 InsertNewlineAtEOF: true
-Language: Cpp
+
+MaxEmptyLinesToKeep: 2
+RemoveEmptyLinesInUnwrappedLines: true
+
+NumericLiteralCase:
+  HexDigit: Upper
+  Prefix: Lower
+  Suffix: Upper
+
+QualifierAlignment: Left
+
+RemoveParentheses: ReturnStatement
+RemoveSemicolon: true
+
+SeparateDefinitionBlocks : Always
+
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceBeforeSquareBrackets: false
+SpacesInLineCommentPrefix:
+  Minimum: 1
+  Maximum: 1
+
