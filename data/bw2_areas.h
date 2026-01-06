@@ -3,7 +3,7 @@
 
 enum { MAP_ID_ROUTE_21_NORTH, MAP_ID_ROUTE_21_SOUTH };
 
-constexpr static const struct area_t AREA_ROUTE_21 = {
+static const struct area_t AREA_ROUTE_21 = {
 	.name      = "route 21",
 	.flags     = AREA_FLAG_DUST_CLOUD,
 	.loadlines = { {
