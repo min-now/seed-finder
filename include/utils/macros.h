@@ -9,6 +9,10 @@
 	fprintf(stderr, "error in %s: %s, line: %d\n\t" S "\n", __FILE__, \
 			__func__, __LINE__, ##__VA_ARGS__)
 
+#define PRINT_ERROR_ABORT(S, ...)\
+	PRINT_ERROR(S, __VA_ARGS__);\
+	exit(1)
+
 #define ROT_L(X, N) (((X) << (N)) | ((X) >> (32 - (N))))
 #define ROT_R(X, N) (((X) >> (N)) | ((X) << (32 - (N))))
 
