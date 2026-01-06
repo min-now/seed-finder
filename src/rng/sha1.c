@@ -1,29 +1,24 @@
 #include "rng/sha1.h"
 
+#include <string.h>
+
 #include "rng/seed.h"
 #include "utils/macros.h"
-
-#include <string.h>
 
 #define SECTION_1(X, Y, A, B, C, D, E, I)                          \
 	X = ROT_L(A, 5) + ((B & C) | ((~B) & D)) + E + 0x5A827999 + I; \
 	Y = ROT_R(B, 2);
 
-#define CALC_W(DATA, IDX)                                                    \
-	DATA[IDX] = ROT_L(                                                       \
-		DATA[IDX - 3] ^ DATA[IDX - 8] ^ DATA[IDX - 14] ^ DATA[IDX - 16], 1);
+#define CALC_W(DATA, IDX) DATA[IDX] = ROT_L(DATA[IDX - 3] ^ DATA[IDX - 8] ^ DATA[IDX - 14] ^ DATA[IDX - 16], 1);
 
-#define CALC_W_SIMD(DATA, IDX)                                                \
-	DATA[IDX] = ROT_L(                                                        \
-		DATA[IDX - 6] ^ DATA[IDX - 16] ^ DATA[IDX - 28] ^ DATA[IDX - 32], 2);
+#define CALC_W_SIMD(DATA, IDX) DATA[IDX] = ROT_L(DATA[IDX - 6] ^ DATA[IDX - 16] ^ DATA[IDX - 28] ^ DATA[IDX - 32], 2);
 
 u64 sha1_hash(struct sha1_t *ctx)
 {
 	u32 *alpha = ctx->alpha;
 	u32 *data  = ctx->data;
 
-	u32 a = alpha[0], b = alpha[1], c = alpha[2], d = alpha[3], e = alpha[4],
-		t = 0;
+	u32 a = alpha[0], b = alpha[1], c = alpha[2], d = alpha[3], e = alpha[4], t = 0;
 
 	// clang-format off
 	CALC_W(data, 17); CALC_W(data, 20); CALC_W(data, 23); CALC_W(data, 25); 
@@ -58,12 +53,9 @@ void sha1_set_date(struct sha1_t *ctx, u16 year, u8 month, u8 day)
 	u16 y = year, m = month, d = day;
 
 	// https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week#Keith
-	u8 dayofweek = (d += m < 3 ? y-- : y - 2,
-					23 * m / 9 + d + 4 + y / 4 - y / 100 + y / 400) %
-				   7;
+	u8 dayofweek = (d += m < 3 ? y-- : y - 2, 23 * m / 9 + d + 4 + y / 4 - y / 100 + y / 400) % 7;
 
-	ctx->data[8] =
-		BCD[year - 2000] << 24 | BCD[month] << 16 | BCD[day] << 8 | dayofweek;
+	ctx->data[8] = BCD[year - 2000] << 24 | BCD[month] << 16 | BCD[day] << 8 | dayofweek;
 }
 
 void sha1_set_time(struct sha1_t *ctx, u8 hour, u8 minute, u8 second)
@@ -99,15 +91,13 @@ struct sha1_t sha1_init(struct seed_ctx_t *seed)
 		sha1.data[6] ^= 0x1000000;
 	}
 
-	sha1.data[7] =
-		(seed->mac_address >> 16) ^ (seed->vframe << 24) ^ seed->gxstat;
+	sha1.data[7] = (seed->mac_address >> 16) ^ (seed->vframe << 24) ^ seed->gxstat;
 
 	sha1.data[13] = 0x80000000;
 	sha1.data[10] = sha1.data[11] = sha1.data[14] = 0;
 	sha1.data[15]                                 = 0x1A0;
 
-	sha1.data[18] =
-		ROT_L(sha1.data[15] ^ sha1.data[10] ^ sha1.data[4] ^ sha1.data[2], 1);
+	sha1.data[18] = ROT_L(sha1.data[15] ^ sha1.data[10] ^ sha1.data[4] ^ sha1.data[2], 1);
 
 	memset(sha1.alpha, 0, SHA1_ALPHA_LEN * sizeof(sha1.alpha[0]));
 

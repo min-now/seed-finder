@@ -1,17 +1,17 @@
 #ifndef SEED_FINDER_ENGINE_TRAINER_H
 #define SEED_FINDER_ENGINE_TRAINER_H
 
+#include <stdlib.h>
+
 #include "rng/rng.h"
 #include "utils/macros.h"
 #include "utils/types.h"
-
-#include <stdlib.h>
 
 #define MAX_TRAINER_CLASS_LEN 20
 #define MAX_TRAINER_NAME_LEN  20
 #define MAX_DIRS              4
 
-constexpr static u8 TRAINER_TIMERS[4] = {16, 32, 48, 64};
+constexpr static u8 TRAINER_TIMERS[4] = { 16, 32, 48, 64 };
 
 enum trainer_dir_e {
 	DIR_NONE = 0,
@@ -24,31 +24,27 @@ enum trainer_dir_e {
 	DIR_ALL = DIR_UP | DIR_DOWN | DIR_LEFT | DIR_RIGHT
 };
 
-enum trainer_status_e {
-	TRAINER_STATUS_UNLOADED,
-	TRAINER_STATUS_LOADED,
-	TRAINER_STATUS_ACTIVE
-};
+enum trainer_status_e { TRAINER_STATUS_UNLOADED, TRAINER_STATUS_LOADED, TRAINER_STATUS_ACTIVE };
 
 enum trainer_type_e {
 	TRAINER_TYPE_SPINNER      = 0,
 	TRAINER_TYPE_SPINNER_DEAF = 2,
 	TRAINER_TYPE_WALKER       = 8,
 	//	TRAINER_TYPE_WALKER_DEAF = 8,
-	TRAINER_TYPE_STATIC = 10,
+	TRAINER_TYPE_STATIC = 10
 };
 
 struct trainer_t {
-	u8 timer;
-	u8 delay;
+	u8       timer;
+	u8       delay;
 	const s8 extra_adv;
 
 	enum trainer_status_e status;
-	enum trainer_dir_e dir;
-	enum trainer_type_e type;
+	enum trainer_dir_e    dir;
+	enum trainer_type_e   type;
 
 	const enum trainer_dir_e dirs[MAX_DIRS];
-	u8 dirs_amt;
+	u8                       dirs_amt;
 
 	const char class[MAX_TRAINER_CLASS_LEN];
 	const char name[MAX_TRAINER_NAME_LEN];

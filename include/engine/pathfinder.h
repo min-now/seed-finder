@@ -1,0 +1,6 @@
+#ifndef SEED_FINDER_ENGINE_PATHFINDER_H
+#define SEED_FINDER_ENGINE_PATHFINDER_H
+
+enum movement_cost_e { WALK = 16, RUN = 8, CHANGE_DIR = 2 };
+
+#endif /* SEED_FINDER_ENGINE_PATHFINDER_H */

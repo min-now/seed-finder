@@ -1,9 +1,9 @@
 #include "config/parameters.h"
 
+#include <stdlib.h>
+
 #include "locale/language.h"
 #include "utils/macros.h"
-
-#include <stdlib.h>
 
 #define CHECK_VALID(P, X, Y)                         \
 	if ((P) < (X) || ((P) > (Y))) {                  \
@@ -11,11 +11,10 @@
 		exit(1);                                     \
 	}
 
-#define CHECK_VALID_RANGE(P1, P2)                                             \
-	if ((P1) > (P2)) {                                                        \
-		PRINT_ERROR(#P1 " cannot be greater than " #P2 " (have %d > %d)", P1, \
-					P2);                                                      \
-		exit(1);                                                              \
+#define CHECK_VALID_RANGE(P1, P2)                                                  \
+	if ((P1) > (P2)) {                                                             \
+		PRINT_ERROR(#P1 " cannot be greater than " #P2 " (have %d > %d)", P1, P2); \
+		exit(1);                                                                   \
 	}
 
 void parameters_validate(struct parameters_t *params)
@@ -62,8 +61,7 @@ void parameters_validate(struct parameters_t *params)
 	puts("done!");
 }
 
-void parameters_set_default(struct parameters_t *params,
-							const enum game_version_e game_version)
+void parameters_set_default(struct parameters_t *params, const enum game_version_e game_version)
 {
 	{
 		params->min_hour = params->min_minute = params->min_second = 0;
@@ -81,9 +79,8 @@ void parameters_set_default(struct parameters_t *params,
 		params->max_year = 2099;
 	}
 
-	params->game_version =
-		game_version == GAME_NOT_SET ? GAME_WHITE_2 : game_version;
-	params->language = LANG_ENG;
+	params->game_version = game_version == GAME_NOT_SET ? GAME_WHITE_2 : game_version;
+	params->language     = LANG_ENG;
 
 	params->min_gxstat = params->max_gxstat = 0x6;
 
@@ -102,7 +99,6 @@ void parameters_set_default(struct parameters_t *params,
 		params->min_vcount = params->max_vcount = 0x82;
 		params->min_vframe = params->max_vframe = 0x8;
 		break;
-	default:
-		break;
+	default: break;
 	}
 }

@@ -19,18 +19,19 @@ struct coord_t {
 		struct {
 			u8 x, y, z;
 		};
+
 		u8 raw[3];
 	};
 };
 
 struct loadline_t {
 	const enum axis_e axis;
-	u8 offset;
-	u8 linked_id;
+	u8                offset;
+	u8                linked_id;
 };
 
 struct map_t {
-	u8 id;
+	u8             id;
 	struct coord_t base_coords;
 
 	struct trainer_t trainers[MAX_MAP_TRAINERS];
@@ -38,7 +39,7 @@ struct map_t {
 };
 
 struct area_t {
-	const char name[MAX_AREA_NAME_LENGTH];
+	const char              name[MAX_AREA_NAME_LENGTH];
 	const enum area_flags_e flags;
 
 	struct loadline_t loadlines[MAX_AREA_LOADLINES];

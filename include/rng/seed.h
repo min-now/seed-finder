@@ -11,8 +11,8 @@ struct seed_ctx_t {
 
 	bool soft_reset;
 
-	u8 day, month;
-	u8 hour, minute, second;
+	u8  day, month;
+	u8  hour, minute, second;
 	u16 year;
 
 	u32 (*nazos)[5];

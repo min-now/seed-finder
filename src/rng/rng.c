@@ -11,6 +11,8 @@ const u8 RNG_ADVANCEMENT_TABLE[5][4] = {
     { 20,  25,  33,  50 }
 };
 
+static void rng_init_adv_helper(rng_t *rng, u8 rounds);
+
 rng_t rng_init(u64 seed, enum game_version_e version)
 {
 	return (rng_t) {
@@ -19,15 +21,15 @@ rng_t rng_init(u64 seed, enum game_version_e version)
 		.frame = 0,
 
 		.reset = &rng_reset,
-		.rand = &rng_rand,
+		.rand  = &rng_rand,
 
-		.adv  = &rng_adv,
-		.adv_rand  = &rng_adv_rand,
+		.adv      = &rng_adv,
+		.adv_rand = &rng_adv_rand,
 
-		.next = &rng_next,
+		.next      = &rng_next,
 		.next_rand = &rng_next_rand,
 
-		.peek = &rng_peek,
+		.peek      = &rng_peek,
 		.peek_rand = &rng_peek_rand,
 
 		.init_adv = (version == GAME_BLACK || version == GAME_WHITE) ? &rng_init_adv_bw1 : &rng_init_adv_bw2,
@@ -44,7 +46,7 @@ void rng_reset(rng_t *rng)
 void rng_reseed(rng_t *rng, u64 seed)
 {
 	rng->rng = rng->seed = seed;
-	rng->frame = 0;
+	rng->frame           = 0;
 }
 
 u64 rng_rand(const rng_t *rng, u32 x)
@@ -90,7 +92,6 @@ u64 rng_peek(const rng_t *rng, size_t n)
 	return temp;
 }
 
-
 u64 rng_peek_rand(const rng_t *rng, size_t n, u32 x)
 {
 	return ((rng->peek(rng, n) >> 32) * x) >> 32;
@@ -126,7 +127,7 @@ u64 rng_init_adv_bw2(rng_t *rng)
 	return rng->rng;
 }
 
-void rng_init_adv_helper(rng_t *rng, u8 rounds)
+static void rng_init_adv_helper(rng_t *rng, u8 rounds)
 {
 	for (u8 round = 0; round < rounds; round++) {
 		for (u8 i = 0; i < 5; ++i) {
@@ -142,4 +143,3 @@ void rng_init_adv_helper(rng_t *rng, u8 rounds)
 		}
 	}
 }
-

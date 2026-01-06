@@ -1,0 +1,6 @@
+#ifndef SEED_FINDER_MAP_TILE_H
+#define SEED_FINDER_MAP_TILE_H
+
+enum tile_type_e { TILE_FLAGS_WATER = 0x3F, TILE_MOVEMENT_WATER = 0x16 };
+
+#endif /* SEED_FINDER_MAP_TILE_H */
