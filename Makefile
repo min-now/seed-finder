@@ -21,8 +21,8 @@ DEP_FILES   = $(OBJ_FILES:.o=.d)
 ###########################
 #    COMPILER SETTINGS    # 
 ###########################
-CC          = clang-22
-STD         = -std=c23
+CC          = gcc-13
+STD         = -std=c2x
 OPT         = -O3
 W_FLAGS     = -Wall -Wextra -Wundef -Wshadow
 DEP_FLAGS   = -MP -MD
