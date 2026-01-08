@@ -6,27 +6,27 @@
 #include "locale/language.h"
 #include "utils/types.h"
 
-extern const u8 RNG_ADVANCEMENT_TABLE[5][4];
+typedef struct rng_s {
+	u64 seed;
+	u64 rng;
 
-typedef struct rng_t {
-	u64    seed, rng;
 	size_t frame;
 
-	void (*reset)(struct rng_t *rng);
-	void (*reseed)(struct rng_t *, u64 seed);
+	void (*reset)(struct rng_s *rng);
+	void (*reseed)(struct rng_s *, u64 seed);
 
-	u64 (*rand)(const struct rng_t *rng, u32 x);
+	u64 (*rand)(const struct rng_s *rng, u32 x);
 
-	u64 (*adv)(struct rng_t *rng, size_t n);
-	u64 (*adv_rand)(struct rng_t *rng, size_t n, u32 x);
+	u64 (*adv)(struct rng_s *rng, size_t n);
+	u64 (*adv_rand)(struct rng_s *rng, size_t n, u32 x);
 
-	u64 (*next)(struct rng_t *rng);
-	u64 (*next_rand)(struct rng_t *rng, u32 x);
+	u64 (*next)(struct rng_s *rng);
+	u64 (*next_rand)(struct rng_s *rng, u32 x);
 
-	u64 (*peek)(const struct rng_t *rng, size_t n);
-	u64 (*peek_rand)(const struct rng_t *rng, size_t n, u32 x);
+	u64 (*peek)(const struct rng_s *rng, size_t n);
+	u64 (*peek_rand)(const struct rng_s *rng, size_t n, u32 x);
 
-	u64 (*init_adv)(struct rng_t *rng);
+	u64 (*init_adv)(struct rng_s *rng);
 } rng_t;
 
 rng_t rng_init(u64 seed, enum game_version_e version);

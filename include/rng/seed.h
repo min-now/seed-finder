@@ -4,10 +4,10 @@
 #include "config/parameters.h"
 #include "utils/types.h"
 
-struct seed_ctx_t {
+typedef struct seed_ctx_t {
 	u64 seed;
 
-	u32 mac_address;
+	u64 mac_address;
 
 	bool soft_reset;
 
@@ -15,10 +15,12 @@ struct seed_ctx_t {
 	u8  hour, minute, second;
 	u16 year;
 
-	u32 (*nazos)[5];
+	u32 keypress;
+
+	const u32 (*nazos)[5];
 
 	u32 timer0, vcount, vframe, gxstat;
-};
+} seed_t;
 
 void seed_ctx_init(struct seed_ctx_t *ctx, struct parameters_t *params);
 

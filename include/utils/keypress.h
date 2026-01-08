@@ -10,7 +10,7 @@ typedef struct keypress_t {
   const char name[8][10];
 } keypress_t;
 
-const static struct keypress_t KEYPRESSES[KEYPRESS_AMT] = {
+static const struct keypress_t KEYPRESSES[KEYPRESS_AMT] = {
     {0xff2f0000, 0, {"NONE"}                                                },
     {0x7f2f0000, 1, {"DOWN"}                                                },
     {0xbf2f0000, 1, {"UP"}                                                  },

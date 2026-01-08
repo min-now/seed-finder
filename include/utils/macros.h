@@ -14,6 +14,6 @@
 #define ROT_L(X, N) (((X) << (N)) | ((X) >> (32 - (N))))
 #define ROT_R(X, N) (((X) >> (N)) | ((X) << (32 - (N))))
 
-#define CHANGE_ENDIAN(X) ((((X << 8) & 0xFF00FF00) | ((X >> 8) & 0xFF00FF)) << 16) | ((((X << 8) & 0xFF00FF00) | ((X >> 8) & 0xFF00FF)) >> 16)
+#define CHANGE_ENDIAN(X) (((((X) << 8) & 0xFF00FF00) | (((X) >> 8) & 0xFF00FF)) << 16) | (((((X) << 8) & 0xFF00FF00) | (((X) >> 8) & 0xFF00FF)) >> 16)
 
 #endif /* SEED_FINDER_UTILS_MACROS_H */

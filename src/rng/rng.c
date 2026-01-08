@@ -3,14 +3,6 @@
 #include "config/parameters.h"
 #include "utils/types.h"
 
-const u8 RNG_ADVANCEMENT_TABLE[5][4] = {
-	{ 50, 100, 100, 100 },
-    { 50,  50, 100, 100 },
-    { 30,  50, 100, 100 },
-    { 25,  30,  50, 100 },
-    { 20,  25,  33,  50 }
-};
-
 static void rng_init_adv_helper(rng_t *rng, u8 rounds);
 
 rng_t rng_init(u64 seed, enum game_version_e version)
@@ -129,7 +121,15 @@ u64 rng_init_adv_bw2(rng_t *rng)
 
 static void rng_init_adv_helper(rng_t *rng, u8 rounds)
 {
-	for (u8 round = 0; round < rounds; round++) {
+	static const u8 RNG_ADVANCEMENT_TABLE[5][4] = {
+		{ 50, 100, 100, 100 },
+        { 50,  50, 100, 100 },
+        { 30,  50, 100, 100 },
+        { 25,  30,  50, 100 },
+        { 20,  25,  33,  50 }
+	};
+
+	for (u8 round = 0; round < rounds; ++round) {
 		for (u8 i = 0; i < 5; ++i) {
 			for (u8 j = 0; j < 4; ++j) {
 				if (RNG_ADVANCEMENT_TABLE[i][j] == 100) {
