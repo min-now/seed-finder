@@ -11,7 +11,7 @@
 #define MAX_TRAINER_NAME_LEN  20
 #define MAX_DIRS              4
 
-constexpr static u8 TRAINER_TIMERS[4] = { 16, 32, 48, 64 };
+static const u8 TRAINER_TIMERS[4] = { 16, 32, 48, 64 };
 
 enum trainer_dir_e {
 	DIR_NONE = 0,
@@ -44,14 +44,15 @@ struct trainer_t {
 	enum trainer_type_e   type;
 
 	const enum trainer_dir_e dirs[MAX_DIRS];
+
 	u8                       dirs_amt;
 
 	const char class[MAX_TRAINER_CLASS_LEN];
 	const char name[MAX_TRAINER_NAME_LEN];
 
-	void (*advance)(struct trainer_t *, struct rng_t *);
+	void (*advance)(struct trainer_t *, rng_t *);
 
-	void (*load)(struct trainer_t *, struct rng_t *);
+	void (*load)(struct trainer_t *, rng_t *);
 
 	void (*unload)(struct trainer_t *);
 	void (*activate)(struct trainer_t *);
@@ -59,14 +60,14 @@ struct trainer_t {
 
 void trainer_init(struct trainer_t *trainer);
 
-void trainer_advance(struct trainer_t *trainer, struct rng_t *rng);
+void trainer_advance(struct trainer_t *trainer, rng_t *rng);
 
-void trainer_load(struct trainer_t *trainer, struct rng_t *rng);
+void trainer_load(struct trainer_t *trainer, rng_t *rng);
 void trainer_unload(struct trainer_t *trainer);
 
 void trainer_activate(struct trainer_t *trainer);
 
-void trainer_new_timer(struct trainer_t *trainer, struct rng_t *rng);
-void trainer_new_dir(struct trainer_t *trainer, struct rng_t *rng);
+void trainer_new_timer(struct trainer_t *trainer, rng_t *rng);
+void trainer_new_dir(struct trainer_t *trainer, rng_t *rng);
 
 #endif /* SEED_FINDER_ENGINE_TRAINER_H */

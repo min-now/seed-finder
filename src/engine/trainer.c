@@ -13,7 +13,7 @@ void trainer_init(struct trainer_t *trainer)
 	trainer->activate = &trainer_activate;
 }
 
-void trainer_advance(struct trainer_t *trainer, struct rng_t *rng)
+void trainer_advance(struct trainer_t *trainer, rng_t *rng)
 {
 	if (trainer->type == TRAINER_TYPE_STATIC || trainer->status != TRAINER_STATUS_ACTIVE) {
 		return;
@@ -43,7 +43,7 @@ void trainer_advance(struct trainer_t *trainer, struct rng_t *rng)
 	}
 }
 
-void trainer_load(struct trainer_t *trainer, struct rng_t *rng)
+void trainer_load(struct trainer_t *trainer, rng_t *rng)
 {
 	if (trainer->status != TRAINER_STATUS_LOADED) {
 		return;
@@ -73,12 +73,12 @@ void trainer_unload(struct trainer_t *trainer)
 	trainer->status = TRAINER_STATUS_UNLOADED;
 }
 
-void trainer_new_timer(struct trainer_t *trainer, struct rng_t *rng)
+void trainer_new_timer(struct trainer_t *trainer, rng_t *rng)
 {
 	trainer->timer = TRAINER_TIMERS[rng->next_rand(rng, 4)];
 }
 
-void trainer_new_dir(struct trainer_t *trainer, struct rng_t *rng)
+void trainer_new_dir(struct trainer_t *trainer, rng_t *rng)
 {
 	trainer->dir = trainer->dirs[rng->next_rand(rng, trainer->dirs_amt)];
 }
