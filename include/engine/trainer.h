@@ -45,7 +45,7 @@ struct trainer_t {
 
 	const enum trainer_dir_e dirs[MAX_DIRS];
 
-	u8                       dirs_amt;
+	u8 dirs_amt;
 
 	const char class[MAX_TRAINER_CLASS_LEN];
 	const char name[MAX_TRAINER_NAME_LEN];

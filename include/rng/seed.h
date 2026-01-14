@@ -1,12 +1,11 @@
 #ifndef SEED_FINDER_RNG_SEED_H
 #define SEED_FINDER_RNG_SEED_H
 
-#include "config/parameters.h"
+#include "locale/params.h"
 #include "utils/types.h"
 
-typedef struct seed_ctx_t {
+typedef struct seed_s {
 	u64 seed;
-
 	u64 mac_address;
 
 	bool soft_reset;
@@ -22,6 +21,6 @@ typedef struct seed_ctx_t {
 	u32 timer0, vcount, vframe, gxstat;
 } seed_t;
 
-void seed_ctx_init(struct seed_ctx_t *ctx, struct parameters_t *params);
+// void seed_ctx_init(struct seed_ctx_t *ctx, struct parameters_t *params);
 
 #endif /* SEED_FINDER_RNG_SEED_H */

@@ -29,8 +29,14 @@ const u8 BCD[] = {
 	128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153,
 };
 
-u64 sha1_hash(sha1_t *ctx)
+u64 sha1_hash(sha1_t *sha1)
 {
+	printf("sha1 message\n\n");
+	for (size_t idx = 0; idx < 16; ++idx) {
+		printf("%x ", sha1->data[idx]);
+	}
+	printf("\n\n");
+
 	u32 vals[5] = { H0, H1, H2, H3, H4 };
 
 	u32 a = H0, b = H1, c = H2, d = H3, e = H4;
@@ -39,15 +45,17 @@ u64 sha1_hash(sha1_t *ctx)
 	{
 		size_t w_idx;
 
-		CALC_W(ctx->data, 16);
-		CALC_W(ctx->data, 17);
+		CALC_W(sha1->data, 16);
+		CALC_W(sha1->data, 17);
+
+		CALC_W(sha1->data, 18);
 
 		for (w_idx = 19; w_idx < 32; ++w_idx) {
-			CALC_W(ctx->data, w_idx);
+			CALC_W(sha1->data, w_idx);
 		}
 
 		for (; w_idx < 80; ++w_idx) {
-			CALC_W_SIMD(ctx->data, w_idx);
+			CALC_W_SIMD(sha1->data, w_idx);
 		}
 	}
 
@@ -66,7 +74,7 @@ u64 sha1_hash(sha1_t *ctx)
 			k = 0xCA62C1D6;
 		}
 
-		temp = ROT_L(a, 5) + f + e + k + ctx->data[i];
+		temp = ROT_L(a, 5) + f + e + k + sha1->data[i];
 		e    = d;
 		d    = c;
 		c    = ROT_L(b, 30);
@@ -93,36 +101,66 @@ u64 sha1_hash(sha1_t *ctx)
 	return (p2 << 32) | p1;
 }
 
-void sha1_set_date(struct sha1_t *ctx, seed_t *seed)
+void sha1_set_date(sha1_t *sha1, u16 year, u8 month, u8 day)
 {
-	u16 y = seed->year, m = seed->month, d = seed->day;
+	u16 y = year, m = month, d = day;
 
 	// https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week#Keith
 	u8 dayofweek = (d += m < 3 ? y-- : y - 2, 23 * m / 9 + d + 4 + y / 4 - y / 100 + y / 400) % 7;
 
-	ctx->data[8] = BCD[seed->year - 2000] << 24 | BCD[seed->month] << 16 | BCD[seed->day] << 8 | dayofweek;
+	sha1->data[8] = BCD[year - 2000] << 24 | BCD[month] << 16 | BCD[day] << 8 | dayofweek;
 }
 
-void sha1_set_time(struct sha1_t *ctx, seed_t *seed)
+void sha1_set_time(sha1_t *sha1, u8 hour, u8 minute, u8 second)
 {
-	u8 x = seed->hour >= 12 ? 0x40 : 0;
-
-	ctx->data[9] = (BCD[seed->hour] + x) << 24 | BCD[seed->minute] << 16 | BCD[seed->second] << 8;
+	u8 x          = hour >= 12 ? 0x40 : 0;
+	sha1->data[9] = (BCD[hour] + x) << 24 | BCD[minute] << 16 | BCD[second] << 8;
 }
 
-void sha1_set_timer0(struct sha1_t *ctx, seed_t *seed)
+void sha1_set_timer0(sha1_t *sha1, u32 timer0, u32 vcount)
 {
-	ctx->data[5] = BSWAP((seed->vcount << 16) | seed->timer0);
+	sha1->data[5] = BSWAP((vcount << 16) | timer0);
 }
 
-void sha1_set_keypress(struct sha1_t *ctx, seed_t *seed)
+void sha1_set_keypress(sha1_t *sha1, u32 keypress)
 {
-	ctx->data[12] = seed->keypress;
+	sha1->data[12] = keypress;
 }
 
-struct sha1_t sha1_init(struct seed_ctx_t *seed)
+sha1_t sha1_init(params_t *params)
 {
-	// Pass in pointer instead?
+	sha1_t sha1 = {};
+
+	// might not need this?
+	memset(sha1.data, 0, SHA1_BUFFER_LEN * sizeof(u32));
+
+	// message[:5] = nazos
+	memcpy(sha1.data, NAZOS[params->language][params->version], 5 * sizeof(u32));
+
+	sha1.data[6] = params->mac_address & 0xFFFF;
+	if (params->soft_reset) {
+		sha1.data[6] ^= 0x1000000;
+	}
+
+	// vcount and gxstat are static for initial seed generation
+	sha1.data[7] = (params->mac_address >> 16) ^ (params->min_vframe << 24) ^ params->min_gxstat;
+
+	// memset covers this
+	sha1.data[10] = sha1.data[11] = sha1.data[14] = 0;
+
+	sha1.data[13] = 0x80000000;
+
+	sha1.data[15] = 0x1A0;
+
+	// can precompute this
+	// sha1.data[18] = ROT_L(sha1.data[15] ^ sha1.data[10] ^ sha1.data[4] ^ sha1.data[2], 1);
+
+	return sha1;
+}
+
+/*
+struct sha1_t _sha1_init(struct seed_ctx_t *seed)
+{
 	struct sha1_t sha1;
 
 	memset(sha1.data, 0, SHA1_BUFFER_LEN * sizeof(sha1.data[0]));
@@ -139,16 +177,18 @@ struct sha1_t sha1_init(struct seed_ctx_t *seed)
 	sha1.data[7] = (seed->mac_address >> 16) ^ (seed->vframe << 24) ^ seed->gxstat;
 
 	sha1.data[10] = sha1.data[11] = sha1.data[14] = 0;
+
 	sha1.data[13]                                 = 0x80000000;
 
 	sha1.data[15] = 0x1A0;
 
 	sha1.data[18] = ROT_L(sha1.data[15] ^ sha1.data[10] ^ sha1.data[4] ^ sha1.data[2], 1);
 
-	memset(sha1.alpha, 0, SHA1_ALPHA_LEN * sizeof(sha1.alpha[0]));
+//	memset(sha1.alpha, 0, SHA1_ALPHA_LEN * sizeof(sha1.alpha[0]));
 
 	return sha1;
 }
+*/
 
 #undef H0
 #undef H1

@@ -3,17 +3,16 @@
 
 #include <stdlib.h>
 
-#include "locale/language.h"
+#include "locale/version.h"
 #include "utils/types.h"
 
 typedef struct rng_s {
-	u64 seed;
-	u64 rng;
+	u64 seed, rng;
 
 	size_t frame;
 
 	void (*reset)(struct rng_s *rng);
-	void (*reseed)(struct rng_s *, u64 seed);
+	void (*reseed)(struct rng_s *rng, u64 seed);
 
 	u64 (*rand)(const struct rng_s *rng, u32 x);
 
@@ -29,7 +28,7 @@ typedef struct rng_s {
 	u64 (*init_adv)(struct rng_s *rng);
 } rng_t;
 
-rng_t rng_init(u64 seed, enum game_version_e version);
+rng_t rng_init(u64 seed, version_t version);
 
 void rng_reset(rng_t *rng);
 void rng_reseed(rng_t *, u64 seed);

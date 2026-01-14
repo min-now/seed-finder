@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "config/parameters.h"
 #include "locale/nazos.h"
+#include "locale/params.h"
 #include "rng/mtrng.h"
 #include "rng/rng.h"
 #include "rng/seed.h"
@@ -11,15 +11,15 @@
 
 static void test_params(void)
 {
-	struct parameters_t params;
-	parameters_set_default(&params, GAME_NOT_SET);
+	params_t params;
+	params_set_default(&params, VERSION_NONE);
 
 	params.min_year = 2000;
 	params.max_year = 2000;
 
 	params.max_keypresses = 0;
 
-	parameters_validate(&params);
+	params_validate(&params);
 }
 
 static void test_mtrng(void)
@@ -60,7 +60,7 @@ static void test_mtrng(void)
 
 void test_sha1(void)
 {
-	struct seed_ctx_t seed = {
+	seed_t seed = {
 		.mac_address = 0x9BFF04BEE,
 		.timer0      = 0x10F4,
 		.gxstat      = 0x6,
@@ -77,7 +77,7 @@ void test_sha1(void)
 		.second = 5,
 
 		.soft_reset = false,
-		.nazos      = &NAZOS[LANG_ENG][GAME_WHITE_2],
+		.nazos      = &NAZOS[LANG_ENG][VERSION_WHITE_2],
 	};
 
 	printf("nazos:\n");
@@ -87,44 +87,50 @@ void test_sha1(void)
 
 	printf("\nnazos new:\n");
 	for (u8 i = 0; i < 5; ++i) {
-		printf("%w32X ", NAZOS[LANG_ENG][GAME_WHITE_2][i]);
+		printf("%w32X ", NAZOS[LANG_ENG][VERSION_WHITE_2][i]);
 	}
 
 	printf("\n\n");
 
+	params_t params;
+	params_set_default(&params, VERSION_WHITE_2);
 
-	sha1_t sha1 = sha1_init(&seed);
+	params.language    = LANG_ENG;
+	params.mac_address = seed.mac_address;
 
-	sha1_set_timer0(&sha1, &seed);
-	sha1_set_date(&sha1, &seed);
-	sha1_set_time(&sha1, &seed);
-	sha1_set_keypress(&sha1, &seed);
+	printf("%x %x \n", params.min_vcount, params.min_gxstat);
+
+	sha1_t sha1 = sha1_init(&params);
+
+	sha1_set_timer0(&sha1, seed.timer0, seed.vcount);
+	sha1_set_date(&sha1, seed.year, seed.month, seed.day);
+	sha1_set_time(&sha1, seed.hour, seed.minute, seed.second);
+	sha1_set_keypress(&sha1, seed.keypress);
 
 	u64 res = sha1_hash(&sha1);
 
-	rng_t test_rng = rng_init(res, GAME_NOT_SET);
+	rng_t test_rng = rng_init(res, VERSION_NONE);
 	//	test_rng.next(&test_rng);
 	printf("%w64X: %w64X\n", res, test_rng.next(&test_rng));
 }
 
-int main(void)
+int main(int argc, const char *argv[])
 {
+
+	params_load("config.ini");
+	
+	/*
 	test_sha1();
 	test_params();
 	test_mtrng();
 
-	for (size_t i = 0; i < 5; ++i) {
-		printf("%x ", NAZOS[LANG_ENG][GAME_WHITE_2][i]);
-	}
-
-	puts("");
-
-	rng_t rng = rng_init(0x30, GAME_WHITE_2);
+	rng_t rng = rng_init(0x30, VERSION_WHITE_2);
 
 	rng.adv(&rng, 4);
 	rng.init_adv(&rng);
 
 	printf("%lX\n", rng.rng);
+	*/
 
 	return 0;
 }

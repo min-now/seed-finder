@@ -1,11 +1,11 @@
 #include "rng/rng.h"
 
-#include "config/parameters.h"
+#include "locale/version.h"
 #include "utils/types.h"
 
 static void rng_init_adv_helper(rng_t *rng, u8 rounds);
 
-rng_t rng_init(u64 seed, enum game_version_e version)
+rng_t rng_init(u64 seed, version_t version)
 {
 	return (rng_t) {
 		.seed  = seed,
@@ -24,21 +24,23 @@ rng_t rng_init(u64 seed, enum game_version_e version)
 		.peek      = &rng_peek,
 		.peek_rand = &rng_peek_rand,
 
-		.init_adv = (version == GAME_BLACK || version == GAME_WHITE) ? &rng_init_adv_bw1 : &rng_init_adv_bw2,
+		.init_adv = (version == VERSION_BLACK || version == VERSION_WHITE) ? &rng_init_adv_bw1 : &rng_init_adv_bw2,
 
 	};
 }
 
 void rng_reset(rng_t *rng)
 {
-	rng->rng   = rng->seed;
+	rng->rng = rng->seed;
+
 	rng->frame = 0;
 }
 
 void rng_reseed(rng_t *rng, u64 seed)
 {
 	rng->rng = rng->seed = seed;
-	rng->frame           = 0;
+
+	rng->frame = 0;
 }
 
 u64 rng_rand(const rng_t *rng, u32 x)

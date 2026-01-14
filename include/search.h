@@ -1,26 +1,31 @@
 #ifndef SEED_FINDER_SEARCH_H
 #define SEED_FINDER_SEARCH_H
 
-#include "config/parameters.h"
 #include "utils/types.h"
+#include "locale/params.h"
+#include "utils/macros.h"
+#include "rng/seed.h"
 
-const u8 NO_WEATHER_DATES[12][31] = {
-	{ 1, 2, 0, 0, 0, 6, 7, 8, 9, 10,  0,  0,  0, 14, 15, 16, 17, 18, 19,  0,  0, 22, 23, 24, 25, 26,  0,  0,  0, 30, 31 },
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
-	{ 1, 2, 3, 0, 0, 6, 7, 8, 9, 10, 11,  0,  0, 14, 15, 16, 17, 18, 19,  0,  0, 22, 23, 24, 25, 26,  0,  0,  0, 30, 31 },
-	{ 0, 0, 0, 0, 0, 6, 7, 8, 0,  0,  0, 12,  0,  0, 15, 16, 17,  0,  0,  0,  0,  0, 23, 24,  0, 26, 27,  0, 29,  0,  0 },
-	{ 1, 2, 0, 0, 0, 6, 7, 8, 9, 10,  0,  0,  0, 14, 15, 16, 17, 18, 19,  0,  0, 22, 23, 24, 25, 26,  0,  0,  0, 30, 31 },
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
-	{ 1, 2, 3, 0, 0, 6, 7, 8, 9, 10, 11,  0,  0, 14, 15, 16, 17, 18, 19,  0,  0, 22, 23, 24, 25, 26,  0,  0,  0, 30, 31 },
-	{ 0, 0, 0, 0, 0, 6, 0, 8, 0,  0,  0,  0, 12, 13,  0, 15, 16, 17,  0,  0, 20,  0,  0, 23, 24,  0, 26, 27,  0, 29,  0 },
-	{ 1, 2, 0, 0, 0, 6, 7, 8, 9, 10,  0,  0,  0, 14, 15, 16, 17, 18, 19,  0,  0, 22, 23, 24, 25, 26,  0,  0,  0, 30,  0 },
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 },
-	{ 1, 2, 3, 0, 0, 6, 7, 8, 9, 10, 11,  0,  0, 14, 15, 16, 17, 18, 19,  0,  0, 22, 23, 24, 25, 26,  0,  0, 30,  0,  0 },
-	{ 0, 0, 0, 4, 0, 6, 7, 0, 0, 10,  0, 12, 13,  0, 15, 16, 17,  0, 19, 20,  0,  0, 23, 24,  0, 26, 27,  0, 29,  0,  0 },
-};
+extern const u8 NO_WEATHER_DATES[12][31];
 
-typedef bool (*callback_t)(u64 seed, struct parameters_t *);
+// typedef bool (*callback_t)(u64 seed, struct parameters_t *);
 
-void generate(struct parameters_t *params, callback_t *cb);
+/*
+#define MAX_LIST_SIZE
+
+#define darray_new(type, size)\
+	struct {				\
+		type 
+
+	}
+*/
+
+typedef struct search_ctx_s {
+	seed_t seed;
+	search_type_t search_type;
+
+} search_ctx_t;
+
+void generate(params_t *params);
 
 #endif /* SEED_FINDER_SEARCH_H */

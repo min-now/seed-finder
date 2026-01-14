@@ -1,16 +1,6 @@
-#ifndef SEED_FINDER_UTILS_KEYPRESS_H
-#define SEED_FINDER_UTILS_KEYPRESS_H
+#include "locale/keypresses.h"
 
-#define KEYPRESS_AMT 2144
-
-typedef struct keypress_t {
-  u32 raw;
-  u8 button_amt;
-
-  const char name[8][10];
-} keypress_t;
-
-static const struct keypress_t KEYPRESSES[KEYPRESS_AMT] = {
+const keypress_t KEYPRESSES[KEYPRESS_AMT] = {
     {0xff2f0000, 0, {"NONE"}                                                },
     {0x7f2f0000, 1, {"DOWN"}                                                },
     {0xbf2f0000, 1, {"UP"}                                                  },
@@ -2156,5 +2146,3 @@ static const struct keypress_t KEYPRESSES[KEYPRESS_AMT] = {
     {0xd8200000, 8, {"R", "L", "X", "Y", "A", "B", "SELECT", "LEFT"}        },
     {0xe8200000, 8, {"R", "L", "X", "Y", "A", "B", "SELECT", "RIGHT"}       }
 };
-
-#endif /* SEED_FINDER_UTILS_KEYPRESS_H */
