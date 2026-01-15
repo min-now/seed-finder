@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "io/job.h"
+#include "io/profile.h"
+
+#include "io/parser.h"
 #include "locale/nazos.h"
 #include "locale/params.h"
 #include "rng/mtrng.h"
@@ -9,6 +13,7 @@
 #include "rng/sha1.h"
 #include "utils/macros.h"
 
+[[maybe_unused]]
 static void test_params(void)
 {
 	params_t params;
@@ -22,6 +27,7 @@ static void test_params(void)
 	params_validate(&params);
 }
 
+[[maybe_unused]]
 static void test_mtrng(void)
 {
 	mtrng_t mtrng;
@@ -58,6 +64,7 @@ static void test_mtrng(void)
 	}
 }
 
+[[maybe_unused]]
 void test_sha1(void)
 {
 	seed_t seed = {
@@ -114,8 +121,11 @@ void test_sha1(void)
 	printf("%w64X: %w64X\n", res, test_rng.next(&test_rng));
 }
 
-int main(int argc, const char *argv[])
+int main([[maybe_unused]] int argc, [[maybe_unused]] const char *argv[])
 {
+	job_t job = {};
+//	parser_load_file("doesntexist.txt", INI_TYPE_PROFILE, NULL);
+
 
 	params_load("config.ini");
 	

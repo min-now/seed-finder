@@ -14,5 +14,4 @@ int parser_load_file(const char *path, ini_type_t type, void *data);
 // `int num` is max_line
 int parser_read(const char *restrict path);
 
-
 #endif /* SEED_FINDER_IO_PARSER_H */

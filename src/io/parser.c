@@ -13,19 +13,19 @@ int parser_load_file(const char *path, ini_type_t type, void *data)
 	FILE *file = fopen(path, "r");
 
 	if (file == nullptr) {
-		PRINT_ERROR("couldn't open file %s: %s", path, strerror(errno));
+		PRINT_ERROR("Error opening file \"%s\": %s", path, strerror(errno));
 		exit(errno);
 	}
 
-	/*
 	switch (type) {
 		// profile_t
 		case INI_TYPE_PROFILE: 
+
+
 		// job_t
 		case INI_TYPE_JOB:
 
 	}
-	*/
 	
 	return EXIT_SUCCESS;
 }

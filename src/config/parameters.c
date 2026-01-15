@@ -1,4 +1,5 @@
-#include "config/parameters.h"
+/*
+#include "parameters.h"
 
 #include <stdlib.h>
 
@@ -37,7 +38,7 @@ void parameters_validate(struct parameters_t *params)
 		CHECK_VALID(params->max_month, 1, 12);
 		CHECK_VALID_RANGE(params->min_month, params->max_month);
 
-		/* Assume the amount of days in a month is 31 */
+		// Assume the amount of days in a month is 31 
 		CHECK_VALID(params->min_day, 1, 31);
 		CHECK_VALID(params->max_day, 1, 31);
 		CHECK_VALID_RANGE(params->min_day, params->max_day);
@@ -102,3 +103,5 @@ void parameters_set_default(struct parameters_t *params, const enum game_version
 	default: break;
 	}
 }
+
+*/

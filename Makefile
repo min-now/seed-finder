@@ -26,7 +26,7 @@ DEP_FILES   = $(ALL_OBJS:.o=.d)
 ###########################
 #    COMPILER SETTINGS    # 
 ###########################
-CC          = gcc-13
+CC          = gcc-15
 STD         = -std=c2x
 OPT         = -O3
 W_FLAGS     = -Wall -Wextra -Wundef -Wshadow
