@@ -9,7 +9,7 @@
 #include "locale/params.h"
 #include "locale/version.h"
 #include "utils/macros.h"
-#include "search.h"
+//#include "search.h"
 
 #define CHECK_VALID(P, X, Y)                                                                                                                                                                           \
   if ((P) < (X) || ((P) > (Y))) {                                                                                                                                                                      \
@@ -201,7 +201,7 @@ params_t params_load(const char *path)
 	int ret;
 
 	if ((ret = ini_parse(path, &params_handler, &params)) < 0) {
-		PRINT_ERROR("couldn't load file: %s; aborting", path);
+		PRINT_ERROR("couldn't load file \"%s\"; exiting", path);
 		exit(ret);
 	}
 

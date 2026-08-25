@@ -31,11 +31,11 @@ const u8 BCD[] = {
 
 u64 sha1_hash(sha1_t *sha1)
 {
-	printf("sha1 message\n\n");
-	for (size_t idx = 0; idx < 16; ++idx) {
-		printf("%x ", sha1->data[idx]);
-	}
-	printf("\n\n");
+	// printf("sha1 message\n\n");
+	// for (size_t idx = 0; idx < 16; ++idx) {
+	// 	printf("%x ", sha1->data[idx]);
+	// }
+	// printf("\n\n");
 
 	u32 vals[5] = { H0, H1, H2, H3, H4 };
 

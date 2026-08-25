@@ -23,9 +23,11 @@ const u8 NO_WEATHER_DATES[12][31] = {
 	{ 0, 0, 0, 4, 0, 6, 7, 0, 0, 10,  0, 12, 13,  0, 15, 16, 17,  0, 19, 20,  0,  0, 23, 24,  0, 26, 27,  0, 29,  0,  0 },
 };
 
-void search(params_t *params, seed_t *out, size_t out_size, bool (*callback)(u64 seed, seed_t *ctx))
+void search(params_t *params, bool (*callback)(u64 seed, params_t *ctx))
 {
 	sha1_t ctx = sha1_init(params);
+
+	size_t amt = 0;
 
 	for (u32 kp_idx = 0; kp_idx < KEYPRESS_AMT; ++kp_idx) {
 		if (params->max_keypresses < KEYPRESSES[kp_idx].button_amt) {
@@ -52,8 +54,9 @@ void search(params_t *params, seed_t *out, size_t out_size, bool (*callback)(u64
 												sha1_set_time(&ctx, hour, minute, second);
 
 												u64 seed = sha1_hash(&ctx);
-												callback(seed, NULL);
-												// hash seed, then callback
+												if (callback && callback(seed, params)) {
+													printf("found! %lx\n", seed);
+												}
 											}
 										}
 									}

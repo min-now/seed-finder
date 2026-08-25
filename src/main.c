@@ -13,6 +13,8 @@
 #include "rng/sha1.h"
 #include "utils/macros.h"
 
+#include "search.h"
+
 [[maybe_unused]]
 static void test_params(void)
 {
@@ -121,16 +123,34 @@ void test_sha1(void)
 	printf("%w64X: %w64X\n", res, test_rng.next(&test_rng));
 }
 
+bool iv_callback(u64 seed, params_t *params)
+{
+	mtrng_t mtrng;
+	mtrng_init(&mtrng, seed >> 32);
+
+	u8 ivs[6] = { 0 };
+	mtrng.get_ivs(&mtrng, &ivs);
+	for (size_t j = 0; j < 6; ++j) {
+		if (ivs[j] < 26) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char *argv[])
 {
 	job_t job = {};
 //	parser_load_file("doesntexist.txt", INI_TYPE_PROFILE, NULL);
 
+	params_t params = params_load("config.ini");
 
-	params_load("config.ini");
+	search(&params, iv_callback);
 	
 	/*
-	test_sha1();
+	
 	test_params();
 	test_mtrng();
 

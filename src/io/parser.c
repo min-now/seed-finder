@@ -7,6 +7,7 @@
 #include "utils/macros.h"
 #include "libs/inih/ini.h"
 
+[[warn_unused]]
 int parser_load_file(const char *path, ini_type_t type, void *data)
 {
 	// handle the FILE object separately as `ini_parse_file` doesn't output to stderr on error

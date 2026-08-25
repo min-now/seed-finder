@@ -29,7 +29,7 @@ DEP_FILES   = $(ALL_OBJS:.o=.d)
 CC          = gcc-15
 STD         = -std=c2x
 OPT         = -O3
-W_FLAGS     = -Wall -Wextra -Wundef -Wshadow
+W_FLAGS     = -Wall -Wextra -Wundef -Wshadow -Wunused
 DEP_FLAGS   = -MP -MD
 #DEBUG_FLAGS := 
 
