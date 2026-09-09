@@ -11,16 +11,18 @@ typedef struct mtrng_s {
 	size_t index, frame;
 	u32    table[MTRNG_TABLE_SIZE];
 
-	void (*reset)(struct mtrng_s *, u32 seed);
+	/*
+	void (*reset)(mtrng_t *, u32 seed);
 
-	void (*advance)(struct mtrng_s *, size_t);
-	u32  (*next)(struct mtrng_s *);
-	u32  (*current)(struct mtrng_s *);
+	void (*advance)(struct mtrng *, size_t);
+	u32  (*next)(struct mtrng *);
+	u32  (*current)(struct mtrng *);
 
-	void (*shuffle)(struct mtrng_s *);
+	void (*shuffle)(struct mtrng *);
 
-	void (*get_ivs)(struct mtrng_s *, u8 (*restrict)[6]);
-	bool (*has_pkrs)(struct mtrng_s *);
+	void (*get_ivs)(struct mtrng *, u8 (*restrict)[6]);
+	bool (*has_pkrs)(struct mtrng *);
+	*/
 } mtrng_t;
 
 void mtrng_init(mtrng_t *mtrng, u32 seed);

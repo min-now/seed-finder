@@ -16,6 +16,9 @@
 
 #define BSWAP(X) __builtin_bswap32((X))
 
+#define HIGH_32(X) ((X) >> 32)
+#define LOW_32(X) ((X) & 0xFFFFFFFF)
+
 #define CHANGE_ENDIAN(X)                                                \
 	(((((X) << 8) & 0xFF00FF00) | (((X) >> 8) & 0xFF00FF)) << 16)       \
 		| (((((X) << 8) & 0xFF00FF00) | (((X) >> 8) & 0xFF00FF)) >> 16)

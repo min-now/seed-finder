@@ -70,4 +70,7 @@ void trainer_activate(struct trainer_t *trainer);
 void trainer_new_timer(struct trainer_t *trainer, rng_t *rng);
 void trainer_new_dir(struct trainer_t *trainer, rng_t *rng);
 
+void trainer_print(struct trainer_t *trainer);
+struct trainer *trainer_builder(const char *name, const char *class, enum trainer_dir_e dirs);
+
 #endif /* SEED_FINDER_ENGINE_TRAINER_H */
