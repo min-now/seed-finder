@@ -6,14 +6,15 @@
 
 void mtrng_init(mtrng_t *mtrng, u32 seed)
 {
-#ifdef DEBUG
+#if DEBUG
 	if (mtrng == NULL) {
-		PRINT_ERROR_ABORT("mtrng_t *mtrng is NULL");
+		PRINT_ERROR_ABORT("mtrng *mtrng is NULL");
 	}
 #endif
 
 	init_table(mtrng, seed);
 
+	/*
 	mtrng->shuffle = &mtrng_shuffle;
 	mtrng->advance = &mtrng_advance;
 	mtrng->reset   = &mtrng_reset;
@@ -22,6 +23,7 @@ void mtrng_init(mtrng_t *mtrng, u32 seed)
 
 	mtrng->has_pkrs = &mtrng_has_pkrs;
 	mtrng->get_ivs  = &mtrng_get_ivs;
+	*/
 }
 
 void mtrng_reset(mtrng_t *mtrng, u32 seed)
@@ -31,7 +33,7 @@ void mtrng_reset(mtrng_t *mtrng, u32 seed)
 
 void mtrng_advance(mtrng_t *mtrng, size_t n)
 {
-#ifdef DEBUG
+#if DEBUG
 	if (n == 0) {
 		PRINT_ERROR("cannot advance mtrng by 0 frames");
 		return;
@@ -40,7 +42,7 @@ void mtrng_advance(mtrng_t *mtrng, size_t n)
 
 	n += mtrng->index;
 	while (n >= MTRNG_TABLE_SIZE) {
-		mtrng->shuffle(mtrng);
+		mtrng_shuffle(mtrng);
 		n -= MTRNG_TABLE_SIZE;
 	}
 
@@ -54,10 +56,10 @@ u32 mtrng_next(mtrng_t *mtrng)
 	mtrng->frame++;
 
 	if (mtrng->index >= MTRNG_TABLE_SIZE) {
-		mtrng->shuffle(mtrng);
+		mtrng_shuffle(mtrng);
 	}
 
-	return mtrng->current(mtrng);
+	return mtrng_current(mtrng);
 }
 
 u32 mtrng_current(mtrng_t *mtrng)
@@ -92,12 +94,12 @@ void mtrng_shuffle(mtrng_t *mtrng)
 void mtrng_get_ivs(mtrng_t *mtrng, u8 (*restrict ivs)[6])
 {
 	for (size_t i = 0; i < 6; ++i) {
-		(*ivs)[i] = mtrng->next(mtrng) >> 27;
+		(*ivs)[i] = mtrng_next(mtrng) >> 27;
 	}
 }
 
 bool mtrng_has_pkrs(mtrng_t *mtrng)
 {
-	u16 val = mtrng->current(mtrng) >> 16;
+	u16 val = mtrng_current(mtrng) >> 16;
 	return val == 0x4000 || val == 0x8000 || val == 0xC000;
 }

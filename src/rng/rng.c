@@ -3,7 +3,14 @@
 #include "locale/version.h"
 #include "utils/types.h"
 
+#include <stdio.h>
+
 static void rng_init_adv_helper(rng_t *rng, u8 rounds);
+
+void rng_print(rng_t *rng)
+{
+	printf("%16lX [%d]\n", rng->rng, rng->frame);
+}
 
 rng_t rng_init(u64 seed, version_t version)
 {
@@ -11,6 +18,8 @@ rng_t rng_init(u64 seed, version_t version)
 		.seed  = seed,
 		.rng   = seed,
 		.frame = 0,
+
+		.print = &rng_print,
 
 		.reset = &rng_reset,
 		.rand  = &rng_rand,

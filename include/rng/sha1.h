@@ -23,6 +23,8 @@ void sha1_set_time(sha1_t *sha1, u8 hour, u8 minute, u8 second);
 
 void sha1_set_timer0(sha1_t *sha1, u32 timer0, u32 vcount);
 
+void sha1_set_vframe(sha1_t *sha1, u64 mac_address, u64 gxstat, u32 vframe);
+
 void sha1_set_keypress(sha1_t *sha1, u32 keypress);
 
 // struct sha1_t sha1_init(params_t *params);

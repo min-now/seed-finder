@@ -1,5 +1,24 @@
 #include "engine/trainer.h"
 
+static const char *dir_to_str(enum trainer_dir_e dir)
+{
+	switch (dir) {
+		case DIR_UP:
+			return "up";
+		case DIR_DOWN:
+			return "down";
+		case DIR_LEFT:
+			return "left";
+		case DIR_RIGHT:
+			return "right";
+
+		case DIR_NONE:
+		case DIR_ALL:
+		default:
+			return "unknown";
+	}
+}
+
 void trainer_init(struct trainer_t *trainer)
 {
 	if (trainer == NULL) {
@@ -11,6 +30,12 @@ void trainer_init(struct trainer_t *trainer)
 	trainer->load     = &trainer_load;
 	trainer->unload   = &trainer_unload;
 	trainer->activate = &trainer_activate;
+}
+
+
+void trainer_print(struct trainer_t *trainer)
+{
+	printf("%s (%s): %5s[%d]\n", trainer->name, trainer->class, dir_to_str(trainer->dir), trainer->timer);
 }
 
 void trainer_advance(struct trainer_t *trainer, rng_t *rng)
@@ -45,7 +70,7 @@ void trainer_advance(struct trainer_t *trainer, rng_t *rng)
 
 void trainer_load(struct trainer_t *trainer, rng_t *rng)
 {
-	if (trainer->status != TRAINER_STATUS_LOADED) {
+	if (trainer->status == TRAINER_STATUS_LOADED) {
 		return;
 	}
 
@@ -55,7 +80,6 @@ void trainer_load(struct trainer_t *trainer, rng_t *rng)
 
 void trainer_activate(struct trainer_t *trainer)
 {
-
 	// Only activate trainers that are already loaded
 	if (trainer->status != TRAINER_STATUS_LOADED) {
 		return;
@@ -82,3 +106,4 @@ void trainer_new_dir(struct trainer_t *trainer, rng_t *rng)
 {
 	trainer->dir = trainer->dirs[rng->next_rand(rng, trainer->dirs_amt)];
 }
+

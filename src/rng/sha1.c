@@ -21,7 +21,7 @@
 
 #define CALC_W_SIMD(DATA, IDX) DATA[IDX] = ROT_L(DATA[IDX - 6] ^ DATA[IDX - 16] ^ DATA[IDX - 28] ^ DATA[IDX - 32], 2);
 
-const u8 BCD[] = {
+static const u8 BCD[] = {
 	0,   1,   2,   3,   4,   5,   6,   7,   8,   9,   16,  17,  18,  19,  20,  21,  22,  23,  24,  25,
 	32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  48,  49,  50,  51,  52,  53,  54,  55,  56,  57,
 	64,  65,  66,  67,  68,  69,  70,  71,  72,  73,  80,  81,  82,  83,  84,  85,  86,  87,  88,  89,
@@ -122,6 +122,11 @@ void sha1_set_timer0(sha1_t *sha1, u32 timer0, u32 vcount)
 	sha1->data[5] = BSWAP((vcount << 16) | timer0);
 }
 
+void sha1_set_vframe(sha1_t *sha1, u64 mac_address, u64 gxstat, u32 vframe)
+{
+	sha1->data[7] = (mac_address >> 16) ^ (vframe << 24) ^ gxstat;
+}
+
 void sha1_set_keypress(sha1_t *sha1, u32 keypress)
 {
 	sha1->data[12] = keypress;
@@ -143,7 +148,7 @@ sha1_t sha1_init(params_t *params)
 	}
 
 	// vcount and gxstat are static for initial seed generation
-	sha1.data[7] = (params->mac_address >> 16) ^ (params->min_vframe << 24) ^ params->min_gxstat;
+//	sha1.data[7] = (params->mac_address >> 16) ^ (params->min_vframe << 24) ^ params->gxstat;
 
 	// memset covers this
 	sha1.data[10] = sha1.data[11] = sha1.data[14] = 0;

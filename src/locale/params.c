@@ -9,7 +9,6 @@
 #include "locale/params.h"
 #include "locale/version.h"
 #include "utils/macros.h"
-//#include "search.h"
 
 #define CHECK_VALID(P, X, Y)                                                                                                                                                                           \
   if ((P) < (X) || ((P) > (Y))) {                                                                                                                                                                      \
@@ -35,12 +34,14 @@ static char *search_type_to_str(search_type_t type)
 		case SEARCH_TYPE_IV_POKERUS: return "ivs & pokerus";
 		case SEARCH_TYPE_TRAINER_SKIP: return "trainer skip";
 		case SEARCH_TYPE_PLASMA_SKIP: return "plasma skip";
+		case SEARCH_TYPE_METRONOME: return "metronome";
 		default:
 									   PRINT_ERROR("invalid search type: %u", type);
 									   exit(1);
 	}
 
 }
+
 static version_t get_version(const char *version)
 {
 	static const char *VERSIONS[VERSION_AMT] = {"black", "white", "black_2", "white_2"};
@@ -80,7 +81,7 @@ static language_t get_language(const char *lang)
 
 static search_type_t search_type_from_str(const char *search_type)
 {
-	static const char *SEARCH_TYPES[SEARCH_TYPE_AMT] = {"iv", "iv_pokerus", "trainer_skip", "plasma_skip"};
+	static const char *SEARCH_TYPES[SEARCH_TYPE_AMT] = {"iv", "iv_pokerus", "trainer_skip", "plasma_skip", "metronome"};
 
 	for (size_t idx = 0; idx < SEARCH_TYPE_AMT; ++idx) {
 		if (STR_EQ(search_type, SEARCH_TYPES[idx])) {
@@ -98,7 +99,6 @@ static search_type_t search_type_from_str(const char *search_type)
 }
 
 
-
 static int params_handler(void *out, const char *sec, const char *key, const char *value)
 {
 #define FMT_HEX(W) ("%w" #W "X")
@@ -113,7 +113,8 @@ static int params_handler(void *out, const char *sec, const char *key, const cha
 		struct {
 			const char *key;
 			const char *format_str;
-			int (*callback)(void *, void *);
+			void (*callback);
+//			int (*callback)(void *);
 			void *ptr;
 		} entries[MAX_ENTRIES];
 	} LOOKUPS[] = {
@@ -127,7 +128,7 @@ static int params_handler(void *out, const char *sec, const char *key, const cha
 				},
 			   	{
 					.key = "language",
-					.callback = &lang_from_str,
+					.callback = (enum language_t (*)(const char*)) handlers[0],
 					.ptr = &params->language,
 				},
 				{
@@ -139,7 +140,6 @@ static int params_handler(void *out, const char *sec, const char *key, const cha
 			}
 		},
 	};
-	// Pretty inefficient, though convenient
 	for (size_t i = 0; i < sizeof(LOOKUPS) / sizeof(LOOKUPS[0]); ++i) {
 		for (size_t j = 0; j < MAX_ENTRIES; ++j) {
 			if (LOOKUPS[i].entries[j].key == NULL) {
@@ -154,12 +154,12 @@ static int params_handler(void *out, const char *sec, const char *key, const cha
 			} 
 		}
 	}
+
 	*/
+#define MATCH_SEC(SEC) (STR_EQ(sec, SEC))
+#define MATCH_KEY(KEY) (STR_EQ(key, KEY))
 
-	#define MATCH_SEC(SEC) (STR_EQ(sec, SEC))
-	#define MATCH_KEY(KEY) (STR_EQ(key, KEY))
 
-	
 	if (MATCH_SEC("parameters")) {
 		if (MATCH_KEY("mac_address")) {
 			sscanf(value, "%w64X", &params->mac_address);
@@ -173,7 +173,13 @@ static int params_handler(void *out, const char *sec, const char *key, const cha
 	} else if (MATCH_SEC("parameters.misc")) {
 		if (MATCH_KEY("timer0_range")) {
 			sscanf(value, "%w32X,%w32x", &params->min_timer0, &params->max_timer0);
-		}
+		} else if (MATCH_KEY("vcount_range_bw2")) {
+			sscanf(value, "%w32X,%w32x", &params->min_vcount, &params->max_vcount);
+		} else if (MATCH_KEY("vframe_range")) {
+			sscanf(value, "%w32X,%w32x", &params->min_vframe, &params->max_vframe);
+		} else if (MATCH_KEY("max_keypresses")) {
+			sscanf(value, "%d", &params->max_keypresses);
+		} 
 	} else if (MATCH_SEC("parameters.date_time")) {
 		if (MATCH_KEY("year_range")) {
 			sscanf(value, "%w16u,%w16u", &params->min_year, &params->max_year);
@@ -181,8 +187,13 @@ static int params_handler(void *out, const char *sec, const char *key, const cha
 			sscanf(value, "%w8u,%w8u", &params->min_month, &params->max_month);
 		} else if (MATCH_KEY("day_range")) {
 			sscanf(value, "%w8u,%w8u", &params->min_day, &params->max_day);
+		} else if (MATCH_KEY("hour_range")) {
+			sscanf(value, "%w8u,%w8u", &params->min_hour, &params->max_hour);
+		} else if (MATCH_KEY("minute_range")) {
+			sscanf(value, "%w8u,%w8u", &params->min_minute, &params->max_minute);
+		} else if (MATCH_KEY("second_range")) {
+			sscanf(value, "%w8u,%w8u", &params->min_second, &params->max_second);
 		} 
-
 	}
 
 
@@ -254,7 +265,8 @@ void params_validate(params_t *params) {
   puts("done!");
 }
 
-void params_set_default(params_t *params, version_t version) {
+void params_set_default(params_t *params, version_t version)
+{
   {
     params->min_hour = params->min_minute = params->min_second = 0;
 
@@ -305,15 +317,26 @@ void params_print(FILE *stream, params_t *params)
 	}
 
 	fprintf(stream, "parameters:\n");
+
 	fprintf(stream, "\tmac address: %w64X\n", params->mac_address);
 	fprintf(stream, "\tlanguage: %s (%d)\n", language_to_string(params->language), params->language);
 
 	fprintf(stream, "\tversion: %s (%d)\n", version_to_string(params->version), params->version);
 
 	fprintf(stream, "\ttimer0: %w32X-%w32X\n", params->min_timer0, params->max_timer0);
+	fprintf(stream, "\tvframe: %w32X-%w32X\n", params->min_vframe, params->max_vframe);
+	fprintf(stream, "\tvcount: %w32X-%w32X\n", params->min_vcount, params->max_vcount);
+
 	fprintf(stream, "\tyear: %w16u-%w16u\n", params->min_year, params->max_year);
 	fprintf(stream, "\tmonth: %w8u-%w8u\n", params->min_month, params->max_month);
 	fprintf(stream, "\tday: %w8u-%w8u\n", params->min_day, params->max_day);
+
+	fprintf(stream, "\thour: %w16u-%w16u\n", params->min_hour, params->max_hour);
+	fprintf(stream, "\tminute: %w8u-%w8u\n", params->min_minute, params->max_minute);
+	fprintf(stream, "\tsecond: %w8u-%w8u\n", params->min_second, params->max_second);
+
+
+	fprintf(stream, "\tmax keypresses: %d\n", params->max_keypresses);
 
 	fprintf(stream, "\tnazos: ");
 	for (size_t i = 0; i < 5; ++i) {

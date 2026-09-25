@@ -23,19 +23,30 @@ const u8 NO_WEATHER_DATES[12][31] = {
 	{ 0, 0, 0, 4, 0, 6, 7, 0, 0, 10,  0, 12, 13,  0, 15, 16, 17,  0, 19, 20,  0,  0, 23, 24,  0, 26, 27,  0, 29,  0,  0 },
 };
 
+
+void sha1_print(sha1_t *ctx)
+{
+}
+
 void search(params_t *params, bool (*callback)(u64 seed, params_t *ctx))
 {
 	sha1_t ctx = sha1_init(params);
 
 	size_t amt = 0;
+	size_t trial[2] = {0};
+	double min = 1, max = 0;
 
 	for (u32 kp_idx = 0; kp_idx < KEYPRESS_AMT; ++kp_idx) {
 		if (params->max_keypresses < KEYPRESSES[kp_idx].button_amt) {
 			continue;
 		}
+		sha1_set_keypress(&ctx, KEYPRESSES[kp_idx].data);
+		trial[0] = trial[1] = 0;
 		for (u32 vcount = params->min_vcount; vcount <= params->max_vcount; ++vcount) {
 			for (u32 vframe = params->min_vframe; vframe <= params->max_vframe; ++vframe) {
-				for (u32 gxstat = params->min_gxstat; gxstat <= params->max_gxstat; ++gxstat) {
+				for (u64 gxstat = 0x86000000; gxstat <= 0x86000002; gxstat += 2) {
+//					u16 timer0_range = (u16) ((560190/64.0) * vframe);
+					sha1_set_vframe(&ctx, params->mac_address, vframe, gxstat);
 					for (u32 timer0 = params->min_timer0; timer0 <= params->max_timer0; ++timer0) {
 						sha1_set_timer0(&ctx, timer0, vcount);
 						for (u16 year = params->min_year; year <= params->max_year; ++year) {
@@ -49,13 +60,12 @@ void search(params_t *params, bool (*callback)(u64 seed, params_t *ctx))
 
 									for (u8 hour = params->min_hour; hour <= params->max_hour; ++hour) {
 										for (u8 minute = params->min_minute; minute <= params->max_minute; ++minute) {
-											for (u8 second = params->min_second; second <= params->max_second;
-												 ++second) {
+											for (u8 second = params->min_second; second <= params->max_second; ++second) {
 												sha1_set_time(&ctx, hour, minute, second);
 
 												u64 seed = sha1_hash(&ctx);
-												if (callback && callback(seed, params)) {
-													printf("found! %lx\n", seed);
+												if (callback) {
+													trial[callback(seed, params)]++;
 												}
 											}
 										}
@@ -67,5 +77,13 @@ void search(params_t *params, bool (*callback)(u64 seed, params_t *ctx))
 				}
 			}
 		}
+		double res = (double) (trial[1]) / (trial[0] + trial[1]);
+		min = min > res ? res : min;
+		max = res > max ? res : max;
+			
+
+		printf("keypress: %w64X: %d/%d (%.3f%%)\n", KEYPRESSES[kp_idx].data, trial[0], trial[0] + trial[1], 100 * res);
 	}
+	printf("min: %.3f\n", min);
+	printf("max: %.3f\n", max);
 }

@@ -11,6 +11,8 @@ typedef struct rng_s {
 
 	size_t frame;
 
+	void (*print)(struct rng_s *rng);
+
 	void (*reset)(struct rng_s *rng);
 	void (*reseed)(struct rng_s *rng, u64 seed);
 
