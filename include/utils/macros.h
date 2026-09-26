@@ -25,4 +25,8 @@
 
 #define STR_EQ(S1, S2) (strcmp((S1), (S2)) == 0)
 
+#define MAX(X, Y) ((X) > (Y) ? (X) : (Y))
+#define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
+
+
 #endif /* SEED_FINDER_UTILS_MACROS_H */

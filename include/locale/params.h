@@ -6,13 +6,14 @@
 #include "locale/language.h"
 #include "locale/version.h"
 #include "utils/types.h"
+#include "search/acupressure.h"
 
 typedef enum search_type_e: u32 {
 	SEARCH_TYPE_IV = 0,
 	SEARCH_TYPE_IV_POKERUS,
 	SEARCH_TYPE_TRAINER_SKIP,
 	SEARCH_TYPE_PLASMA_SKIP,
-	SEARCH_TYPE_METRONOME,
+	SEARCH_TYPE_ACUPRESSURE,
 
 	SEARCH_TYPE_AMT,
 } search_type_t;
@@ -25,7 +26,11 @@ typedef union iv_u {
 } iv_t;
 
 typedef struct params_s {
-	u64 mac_address;
+	union {
+		u8 mac_addr[6];
+
+		u64 mac_address;
+	};
 
 	u8 max_keypresses;
 
@@ -33,10 +38,12 @@ typedef struct params_s {
 	size_t min_pokerus, max_pokerus;
 
   bool skip_weather_dates;
-  bool soft_reset;
+  u32 soft_reset;
 
   search_type_t search_type;
-  
+
+  struct acupressure_ctx acupressure_ctx;
+
   bool search_all_params;
 
   u32 min_timer0, max_timer0;

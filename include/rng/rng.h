@@ -49,4 +49,5 @@ u64 rng_peek_rand(const rng_t *rng, size_t n, u32 x);
 u64 rng_init_adv_bw1(rng_t *rng);
 u64 rng_init_adv_bw2(rng_t *rng);
 
+void rng_print(rng_t *rng);
 #endif /* SEED_FINDER_RNG_RNG_H */

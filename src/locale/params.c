@@ -10,6 +10,8 @@
 #include "locale/version.h"
 #include "utils/macros.h"
 
+#include "search/acupressure.h"
+
 #define CHECK_VALID(P, X, Y)                                                                                                                                                                           \
   if ((P) < (X) || ((P) > (Y))) {                                                                                                                                                                      \
     PRINT_ERROR("invalid value: " #P ": %d", P);                                                                                                                                                       \
@@ -27,6 +29,7 @@
 		sscanf((S), "%x, %x", &(MIN), &(MAX)))
 
 
+
 static char *search_type_to_str(search_type_t type)
 {
 	switch (type) {
@@ -34,10 +37,10 @@ static char *search_type_to_str(search_type_t type)
 		case SEARCH_TYPE_IV_POKERUS: return "ivs & pokerus";
 		case SEARCH_TYPE_TRAINER_SKIP: return "trainer skip";
 		case SEARCH_TYPE_PLASMA_SKIP: return "plasma skip";
-		case SEARCH_TYPE_METRONOME: return "metronome";
+		case SEARCH_TYPE_ACUPRESSURE: return "acupressure";
 		default:
-									   PRINT_ERROR("invalid search type: %u", type);
-									   exit(1);
+									  PRINT_ERROR("invalid search type: %u", type);
+									  exit(1);
 	}
 
 }
@@ -81,7 +84,7 @@ static language_t get_language(const char *lang)
 
 static search_type_t search_type_from_str(const char *search_type)
 {
-	static const char *SEARCH_TYPES[SEARCH_TYPE_AMT] = {"iv", "iv_pokerus", "trainer_skip", "plasma_skip", "metronome"};
+	static const char *SEARCH_TYPES[SEARCH_TYPE_AMT] = {"iv", "iv_pokerus", "trainer_skip", "plasma_skip", "acupressure"};
 
 	for (size_t idx = 0; idx < SEARCH_TYPE_AMT; ++idx) {
 		if (STR_EQ(search_type, SEARCH_TYPES[idx])) {
@@ -163,6 +166,7 @@ static int params_handler(void *out, const char *sec, const char *key, const cha
 	if (MATCH_SEC("parameters")) {
 		if (MATCH_KEY("mac_address")) {
 			sscanf(value, "%w64X", &params->mac_address);
+//			sscanf(value, "%w8X:%w8X:%w8X:%w8X:%w8X:%w8X", &params->mac_addr[0], &params->mac_addr[1], &params->mac_addr[2], &params->mac_addr[3], &params->mac_addr[4], &params->mac_addr[5]);
 		} else if (MATCH_KEY("language")) {
 			params->language = get_language(value);
 		} else if (MATCH_KEY("version")) {
@@ -170,15 +174,23 @@ static int params_handler(void *out, const char *sec, const char *key, const cha
 		} else if (MATCH_KEY("search_type")) {
 			params->search_type = search_type_from_str(value);
 		}
+	} else if (MATCH_SEC("search.acupressure")) {
+		if (params->search_type == SEARCH_TYPE_ACUPRESSURE && MATCH_KEY("stat_order")) {
+			params->acupressure_ctx = acupressure_init(value);
+		}
 	} else if (MATCH_SEC("parameters.misc")) {
 		if (MATCH_KEY("timer0_range")) {
-			sscanf(value, "%w32X,%w32x", &params->min_timer0, &params->max_timer0);
+			sscanf(value, "%w32X,%w32X", &params->min_timer0, &params->max_timer0);
 		} else if (MATCH_KEY("vcount_range_bw2")) {
 			sscanf(value, "%w32X,%w32x", &params->min_vcount, &params->max_vcount);
 		} else if (MATCH_KEY("vframe_range")) {
 			sscanf(value, "%w32X,%w32x", &params->min_vframe, &params->max_vframe);
+		} else if (MATCH_KEY("gxstat_range")) {
+			sscanf(value, "%w32X,%w32x", &params->min_gxstat, &params->max_gxstat);
 		} else if (MATCH_KEY("max_keypresses")) {
 			sscanf(value, "%d", &params->max_keypresses);
+		} else if (MATCH_KEY("soft_reset")) {
+			sscanf(value, "%d", &params->soft_reset);
 		} 
 	} else if (MATCH_SEC("parameters.date_time")) {
 		if (MATCH_KEY("year_range")) {
@@ -319,31 +331,51 @@ void params_print(FILE *stream, params_t *params)
 	fprintf(stream, "parameters:\n");
 
 	fprintf(stream, "\tmac address: %w64X\n", params->mac_address);
+	/*
+	fprintf(stream, "\tmac address: ");
+	{
+		for (size_t i = 0; i < 6; ++i) {
+			fprintf(stream, "%02w8X%s", params->mac_addr[i], i == 5 ? "\n" : ":");
+		}
+	}
+	*/
 	fprintf(stream, "\tlanguage: %s (%d)\n", language_to_string(params->language), params->language);
 
 	fprintf(stream, "\tversion: %s (%d)\n", version_to_string(params->version), params->version);
 
-	fprintf(stream, "\ttimer0: %w32X-%w32X\n", params->min_timer0, params->max_timer0);
-	fprintf(stream, "\tvframe: %w32X-%w32X\n", params->min_vframe, params->max_vframe);
-	fprintf(stream, "\tvcount: %w32X-%w32X\n", params->min_vcount, params->max_vcount);
+	fprintf(stream, "\n");
+	fprintf(stream, "\ttimer0: 0x%w32X - 0x%w32X\n", params->min_timer0, params->max_timer0);
+	fprintf(stream, "\tvframe: 0x%w32X - 0x%w32X\n", params->min_vframe, params->max_vframe);
+	fprintf(stream, "\tvcount: 0x%w32X - 0x%w32X\n", params->min_vcount, params->max_vcount);
 
-	fprintf(stream, "\tyear: %w16u-%w16u\n", params->min_year, params->max_year);
-	fprintf(stream, "\tmonth: %w8u-%w8u\n", params->min_month, params->max_month);
-	fprintf(stream, "\tday: %w8u-%w8u\n", params->min_day, params->max_day);
+	fprintf(stream, "\n");
+	fprintf(stream, "\tyear: %w16u - %w16u\n", params->min_year, params->max_year);
+	fprintf(stream, "\tmonth: %w8u - %w8u\n", params->min_month, params->max_month);
+	fprintf(stream, "\tday: %w8u - %w8u\n", params->min_day, params->max_day);
 
-	fprintf(stream, "\thour: %w16u-%w16u\n", params->min_hour, params->max_hour);
-	fprintf(stream, "\tminute: %w8u-%w8u\n", params->min_minute, params->max_minute);
-	fprintf(stream, "\tsecond: %w8u-%w8u\n", params->min_second, params->max_second);
+	fprintf(stream, "\n");
+	fprintf(stream, "\thour: %w16u - %w16u\n", params->min_hour, params->max_hour);
+	fprintf(stream, "\tminute: %w8u - %w8u\n", params->min_minute, params->max_minute);
+	fprintf(stream, "\tsecond: %w8u - %w8u\n", params->min_second, params->max_second);
 
-
+	fprintf(stream, "\n");
 	fprintf(stream, "\tmax keypresses: %d\n", params->max_keypresses);
 
 	fprintf(stream, "\tnazos: ");
 	for (size_t i = 0; i < 5; ++i) {
 		fprintf(stream, "%X ", NAZOS[params->language][params->version][i]);
 	}
-	fprintf(stream, "\n");
+	fprintf(stream, "\n\n");
 
 	fprintf(stream, "search settings:\n");
 	fprintf(stream, "\tsearch type: %s\n", search_type_to_str(params->search_type));
+
+	if (params->search_type == SEARCH_TYPE_ACUPRESSURE) {
+		fprintf(stream, "\tacupressure stat order: ");
+		for (size_t i = 0; i < params->acupressure_ctx.length; ++i) {
+			fprintf(stream, "%s, ", acupressure_to_str(params->acupressure_ctx.stat_order[i]));
+		}
+		fprintf(stream, "\n");
+	}
+	fprintf(stream, "\n");
 }

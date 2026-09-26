@@ -76,20 +76,20 @@ static void test_mtrng(void)
 void test_sha1(void)
 {
 	seed_t seed = {
-		.mac_address = 0x9BFF04BEE,
-		.timer0      = 0x10F4,
+		.mac_address = 0x1B7AA74733,
+		.timer0      = 0x10F5,
 		.gxstat      = 0x6,
 		.vframe      = 0x8,
 		.vcount      = 0x82,
 
-		.day      = 9,
-		.month    = 5,
-		.year     = 2080,
-		.keypress = 0x7D2F0000,
+		.day      = 26,
+		.month    = 4,
+		.year     = 2086,
+		.keypress = 0x9b2f0000,
 
-		.hour   = 22,
-		.minute = 58,
-		.second = 5,
+		.hour   = 23,
+		.minute = 36,
+		.second = 6,
 
 		.soft_reset = false,
 		.nazos      = &NAZOS[LANG_ENG][VERSION_WHITE_2],
@@ -109,11 +109,18 @@ void test_sha1(void)
 
 	params_t params;
 	params_set_default(&params, VERSION_WHITE_2);
+	params.min_gxstat = 6;
+	params.max_gxstat = 6;
 
 	params.language    = LANG_ENG;
-	params.mac_address = seed.mac_address;
+	u8 mac_addr[] = {00, 0x1b, 0x7a, 0xa7, 0x47, 0x33};
+	memcpy(params.mac_addr, mac_addr, sizeof(u8) * 6);
 
-	printf("%x %x \n", params.min_vcount, params.min_gxstat);
+	for (int i = 0; i < 6; ++i) {
+		printf("%x ", params.mac_addr[i]);
+	}
+
+	printf("\n%x %x \n", params.min_vcount, params.min_gxstat);
 
 	sha1_t sha1 = sha1_init(&params);
 
@@ -125,7 +132,7 @@ void test_sha1(void)
 	u64 res = sha1_hash(&sha1);
 
 	rng_t test_rng = rng_init(res, VERSION_NONE);
-	//	test_rng.next(&test_rng);
+		test_rng.next(&test_rng);
 	printf("%w64X: %w64X\n", res, test_rng.next(&test_rng));
 }
 
@@ -162,6 +169,12 @@ static void test_spinners(void)
 	}
 
 }
+
+const struct stat {
+	const char *name;
+	int stage;
+};
+
 
 
 bool metronome_callback(u64 seed, params_t *ctx)
@@ -213,11 +226,39 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char *argv[])
 	//rng.init_adv(&rng);
 	//rng.adv(&rng, 808);
 	//rng.print(&rng);
-
-
-	params_t params = params_load("tts.ini");
+	
+//	test_sha1();
+	
+	params_t params = params_load(argv[1]);
 	params_validate(&params);
-	search(&params, metronome_callback);
+	search(&params, nullptr);
+
+	/*
+	u32 message[64] = {0};
+	message[0] = 0x60772502;
+	message[1] = 0xF4782502;
+	message[2] = 0xF4782502;
+	message[3] = 0x7C722702;
+	message[4] = 0x60772502;
+	message[5] = 0x66709100;
+	message[6] = 0x4D014916;
+	message[7] = 0xC500BF88;
+	message[8] = 0x26092606;
+	message[9] = 0x53284500;
+	message[10] = 0x00000000;
+	message[11] = 0x00060000;
+	message[12] = 0xFF2F0000;
+	message[13] = 0x80000000;
+	message[14] = 0x00000000;
+	message[15] = 0x000001A0;
+
+	sha1_t test;
+	memcpy(test.data, message, sizeof(u32) * 16);
+
+	rng_t res = rng_init(sha1_hash(&test), VERSION_NONE);
+
+	printf("\n%w64x\n", res.rng);
+	*/
 
 	//test_spinners();
 	/*

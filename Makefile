@@ -56,7 +56,7 @@ $(BUILD_DIR)/libs/%.o: $(LIB_DIR)/%.c
 	$(CC) $(C_FLAGS) -c -o $@ $<
 
 run: $(TARGET_PATH)
-	$(TARGET_PATH)
+	$(TARGET_PATH) $(INI_PATH)
 
 format:
 	clang-format-22 -i $(PROJ_SRCS) $(shell find $(SRC_DIR) $(INC_DIR) -name '*.h')

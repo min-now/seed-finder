@@ -11,7 +11,10 @@
 typedef struct sha1_s {
 	u32 data[SHA1_BUFFER_LEN];
 	//	u32 alpha[SHA1_ALPHA_LEN];
+	u64 seed;
 } sha1_t;
+
+void sha1_set_tickcount(sha1_t *sha1, u64 mac_address, u32 tick_count);
 
 u64 sha1_hash(sha1_t *ctx);
 
@@ -23,7 +26,8 @@ void sha1_set_time(sha1_t *sha1, u8 hour, u8 minute, u8 second);
 
 void sha1_set_timer0(sha1_t *sha1, u32 timer0, u32 vcount);
 
-void sha1_set_vframe(sha1_t *sha1, u64 mac_address, u64 gxstat, u32 vframe);
+
+void sha1_set_vframe(sha1_t *sha1, u64 mac_address, u32 vframe, u64 gxstat);
 
 void sha1_set_keypress(sha1_t *sha1, u32 keypress);
 

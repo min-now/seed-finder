@@ -11,6 +11,9 @@
 	X = ROT_L(A, 5) + ((B & C) | ((~B) & D)) + E + 0x5A827999 + I; \
 	Y = ROT_R(B, 2);
 
+#define MAC_LOWER(M) ((u16) ((M[4]) | ((M[5]) << 8)))
+#define MAC_UPPER(M) ((M[0]) | ((M[1]) << 8) | (M[2] << 16) | (M[3] << 24))
+
 #define H0 0x67452301
 #define H1 0xEFCDAB89
 #define H2 0x98BADCFE
@@ -31,11 +34,13 @@ static const u8 BCD[] = {
 
 u64 sha1_hash(sha1_t *sha1)
 {
-	// printf("sha1 message\n\n");
-	// for (size_t idx = 0; idx < 16; ++idx) {
-	// 	printf("%x ", sha1->data[idx]);
-	// }
-	// printf("\n\n");
+	/*
+	 printf("sha1 message\n\n");
+	 for (size_t idx = 0; idx < 16; ++idx) {
+	 	printf("message[%d] = 0x%08X;\n", idx, sha1->data[idx]);
+	 }
+	 printf("\n\n");
+	 */
 
 	u32 vals[5] = { H0, H1, H2, H3, H4 };
 
@@ -56,7 +61,7 @@ u64 sha1_hash(sha1_t *sha1)
 
 		for (; w_idx < 80; ++w_idx) {
 			CALC_W_SIMD(sha1->data, w_idx);
-		}
+		} 
 	}
 
 	for (size_t i = 0; i < 80; ++i) {
@@ -82,15 +87,15 @@ u64 sha1_hash(sha1_t *sha1)
 		a    = temp;
 	}
 
+	/*
 	vals[0] += a;
 	vals[1] += b;
 	vals[2] += c;
 	vals[3] += d;
 	vals[4] += e;
 
-	/*
 	for (u8 i = 0; i < 5; ++i) {
-		printf("%x ", vals[i]);
+		printf("%x ", BSWAP(vals[i]));
 	}
 	putchar('\n');
 	*/
@@ -109,6 +114,7 @@ void sha1_set_date(sha1_t *sha1, u16 year, u8 month, u8 day)
 	u8 dayofweek = (d += m < 3 ? y-- : y - 2, 23 * m / 9 + d + 4 + y / 4 - y / 100 + y / 400) % 7;
 
 	sha1->data[8] = BCD[year - 2000] << 24 | BCD[month] << 16 | BCD[day] << 8 | dayofweek;
+
 }
 
 void sha1_set_time(sha1_t *sha1, u8 hour, u8 minute, u8 second)
@@ -122,14 +128,30 @@ void sha1_set_timer0(sha1_t *sha1, u32 timer0, u32 vcount)
 	sha1->data[5] = BSWAP((vcount << 16) | timer0);
 }
 
-void sha1_set_vframe(sha1_t *sha1, u64 mac_address, u64 gxstat, u32 vframe)
+void sha1_set_vframe(sha1_t *sha1, u64 mac_address, u32 vframe, u64 gxstat)
 {
-	sha1->data[7] = (mac_address >> 16) ^ (vframe << 24) ^ gxstat;
+	u32 upper_mac =
+		((u32)((mac_address >> 40) & 0xFF)) |
+		((u32)((mac_address >> 32) & 0xFF) << 8) |
+		((u32)((mac_address >> 24) & 0xFF) << 16) |
+		((u32)((mac_address >> 16) & 0xFF) << 24);
+
+	sha1->data[7] = BSWAP(upper_mac ^ vframe ^ gxstat);
 }
 
 void sha1_set_keypress(sha1_t *sha1, u32 keypress)
 {
 	sha1->data[12] = keypress;
+}
+
+
+void sha1_set_tickcount(sha1_t *sha1, u64 mac_address, u32 tick_count)
+{
+//	printf("tick: %w32X\n", tick_count);
+	u16 lower_mac = (u16)(mac_address & 0xFFFF);
+	lower_mac = (u16)((lower_mac >> 8) | (lower_mac << 8));
+
+	sha1->data[6] = BSWAP(((u32)lower_mac << 16) ^ tick_count);
 }
 
 sha1_t sha1_init(params_t *params)
@@ -139,19 +161,33 @@ sha1_t sha1_init(params_t *params)
 	// might not need this?
 	memset(sha1.data, 0, SHA1_BUFFER_LEN * sizeof(u32));
 
-	// message[:5] = nazos
-	memcpy(sha1.data, NAZOS[params->language][params->version], 5 * sizeof(u32));
+	if (params->search_type == SEARCH_TYPE_ACUPRESSURE) {
+		sha1.data[0] = sha1.data[4] = 0x60772502;
+		sha1.data[1] = sha1.data[2] = 0xF4782502;
+		sha1.data[3] = 0x7C722702;
+	} else {
+		// message[:5] = nazos
+		memcpy(sha1.data, NAZOS[params->language][params->version], 5 * sizeof(u32));
+	}
 
-	sha1.data[6] = params->mac_address & 0xFFFF;
+
+	//sha1.data[6] = MAC_LOWER(params->mac_addr) << 16;
 	if (params->soft_reset) {
+		puts("SR");
 		sha1.data[6] ^= 0x1000000;
 	}
 
 	// vcount and gxstat are static for initial seed generation
-//	sha1.data[7] = (params->mac_address >> 16) ^ (params->min_vframe << 24) ^ params->gxstat;
+//	sha1.data[7] = MAC_UPPER(params->mac_addr) ^ params->min_vframe ^ params->min_gxstat;
+//	sha1.data[7] = (u32) (params->mac_address >> 16) ^ (params->min_vframe << 24) ^ params->min_gxstat;
 
 	// memset covers this
-	sha1.data[10] = sha1.data[11] = sha1.data[14] = 0;
+	sha1.data[10] = sha1.data[14] = 0;
+
+	sha1.data[11] = 0;
+	if (params->search_type == SEARCH_TYPE_ACUPRESSURE) {
+		sha1.data[11] = 0x00060000;
+	}
 
 	sha1.data[13] = 0x80000000;
 
